@@ -8,6 +8,7 @@ import random
 import os
 
 from datetime import datetime
+import time
 
 
 # Instance folder path, make it independent.
@@ -101,3 +102,44 @@ def make_dir(dir_path):
             os.mkdir(dir_path)
     except Exception, e:
         raise e
+
+from bson import ObjectId
+from converters import ObjectIdConverter
+import json
+
+class JSONModelMixin(object):
+    def _getIgnore(self):
+        if hasattr(self, '_ignore'):
+            return self._ignore
+        return ['_cls', '_types']
+
+    def to_json(self):
+        def _convert_dict_to_json(data):
+            struct = {}
+            # mongo固有のキーとかも残るのでいらないやつを枝切りする
+            ignore = self._getIgnore()
+            for k in data:
+                if k in ignore: continue
+                struct[k] = _convert_value_as_json(data[k])
+            return struct
+
+        def _convert_list_to_json(data):
+            struct = []
+            for v in data:
+                struct.append(_convert_value_as_json(v))
+            return struct
+
+        def _convert_value_as_json(value):
+            if isinstance(value, JSONModelMixin):
+                return _convert_value_as_json(value.to_mongo())
+            if isinstance(value, list):
+                return _convert_list_to_json(value)
+            elif isinstance(value, dict):
+                return _convert_dict_to_json(value)
+            elif isinstance(value, datetime):
+                return int(time.mktime(value.timetuple()) + value.microsecond / 1e6)
+            elif isinstance(value, (unicode, str, int, bool)):
+                return value
+            elif isinstance(value, ObjectId):
+                return ObjectIdConverter.encodeURL(value)
+        return json.dumps(_convert_value_as_json(self.to_mongo()))

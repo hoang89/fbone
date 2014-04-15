@@ -66,11 +66,12 @@ class DefaultConfig(BaseConfig):
     # Flask-openid: http://pythonhosted.org/Flask-OpenID/
     OPENID_FS_STORE_PATH = os.path.join(INSTANCE_FOLDER_PATH, 'openid')
     make_dir(OPENID_FS_STORE_PATH)
-
+    MONGODB_SETTINGS = {'DB': "social_read"}
+    DEBUG_TB_PROFILER_ENABLED = True
 
 class TestConfig(BaseConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
-
+    MONGODB_SETTINGS = {'DB': "test_social_read"}
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'

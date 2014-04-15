@@ -16,7 +16,7 @@ manager = Manager(app)
 def run():
     """Run in local machine."""
 
-    app.run()
+    app.run(threaded=True)
 
 
 @manager.command

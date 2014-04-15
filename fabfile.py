@@ -49,3 +49,10 @@ def babel():
     """
 
     local("python setup.py compile_catalog --directory `find -name translations` --locale zh -f")
+
+def test():
+    """
+    Unit Test
+    """
+    #local("nosetests")
+    local("nosetests -v --with-coverage --with-xunit --cover-package=fbone --cover-html --cover-xml")

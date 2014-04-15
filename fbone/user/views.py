@@ -31,3 +31,15 @@ def profile(user_id):
 def avatar(user_id, filename):
     dir_path = os.path.join(APP.config['UPLOAD_FOLDER'], 'user_%s' % user_id)
     return send_from_directory(dir_path, filename, as_attachment=True)
+
+
+@user.route("/sleep")
+def test_sleep():
+    from time import sleep
+    sleep(100)
+    return "abc"
+
+
+@user.route("/fuck")
+def test_aa():
+    return "no problem man"

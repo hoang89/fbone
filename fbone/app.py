@@ -4,15 +4,18 @@ import os
 
 from flask import Flask, request, render_template
 from flask.ext.babel import Babel
-
+from extensions import db, mongo, mail, cache, login_manager, oid
+from flask_debugtoolbar import DebugToolbarExtension
 from .config import DefaultConfig
 from .user import User, user
 from .settings import settings
 from .frontend import frontend
 from .api import api
 from .admin import admin
-from .extensions import db, mail, cache, login_manager, oid
 from .utils import INSTANCE_FOLDER_PATH
+from .logs import logs
+from .content import content
+from extensions import init_extensions
 
 
 # For import *
@@ -24,6 +27,8 @@ DEFAULT_BLUEPRINTS = (
     settings,
     api,
     admin,
+    logs,
+    content,
 )
 
 
@@ -64,15 +69,6 @@ def configure_app(app, config=None):
 
 
 def configure_extensions(app):
-    # flask-sqlalchemy
-    db.init_app(app)
-
-    # flask-mail
-    mail.init_app(app)
-
-    # flask-cache
-    cache.init_app(app)
-
     # flask-babel
     babel = Babel(app)
 
@@ -81,6 +77,18 @@ def configure_extensions(app):
         accept_languages = app.config.get('ACCEPT_LANGUAGES')
         return request.accept_languages.best_match(accept_languages)
 
+    # flask-sqlalchemy
+    db.init_app(app)
+
+    # flask-mail
+    mail.init_app(app)
+
+    #mongo db
+    mongo.init_app(app)
+
+    # flask-cache
+    cache.init_app(app)
+
     # flask-login
     login_manager.login_view = 'frontend.login'
     login_manager.refresh_view = 'frontend.reauth'
@@ -88,10 +96,15 @@ def configure_extensions(app):
     @login_manager.user_loader
     def load_user(id):
         return User.query.get(id)
-    login_manager.setup_app(app)
+    login_manager.init_app(app)
 
     # flask-openid
     oid.init_app(app)
+
+    # init debug toolbar
+    toolbar = DebugToolbarExtension(app)
+
+    init_extensions(app)
 
 
 def configure_blueprints(app, blueprints):

@@ -27,6 +27,13 @@ setup(
         'Flask-OpenID',
         'nose',
         'mysql-python',
+        'simpleaes',
+        'flask-mongoengine',
+        "flask-restful",
+        "flask-debugtoolbar",
+        "beautifulsoup4",
+        "requests",
+        "PyHamcrest"
     ],
     test_suite='tests',
     classifiers=[

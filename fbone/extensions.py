@@ -14,3 +14,19 @@ login_manager = LoginManager()
 
 from flask.ext.openid import OpenID
 oid = OpenID()
+
+from flask.ext.mongoengine import MongoEngine
+mongo = MongoEngine()
+
+
+from flask.ext.restful import Api
+
+from fbone.reader.views import Reader
+
+
+def init_extensions(app):
+    print "init api"
+    api = Api(app)
+    api.add_resource(Reader, '/reader')
+
+
