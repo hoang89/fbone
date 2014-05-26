@@ -15,7 +15,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Flask',
+        'Flask==0.10.1',
         'Flask-SQLAlchemy',
         'Flask-WTF',
         'Flask-Script',
@@ -26,14 +26,15 @@ setup(
         'Flask-Login',
         'Flask-OpenID',
         'nose',
-        'mysql-python',
+        #'mysql-python',
         'simpleaes',
         'flask-mongoengine',
         "flask-restful",
         "flask-debugtoolbar",
         "beautifulsoup4",
         "requests",
-        "PyHamcrest"
+        "PyHamcrest",
+        "boto"
     ],
     test_suite='tests',
     classifiers=[

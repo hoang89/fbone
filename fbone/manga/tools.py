@@ -2,12 +2,11 @@ __author__ = 'hoangnn'
 
 from uuid import uuid4
 import boto
-from htmldom import htmldom
 import md5
 import os.path
 from models import ChapterInfo, Link
 from flask import current_app
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup, Tag, ResultSet
 import requests
 
 S3_KEY = 'AKIAI3TIE3E2IY2P5KOA'
@@ -103,21 +102,30 @@ def create_manga(chapter, base, max):
     chapter_info.avatar = ava.name
     chapter_info.save()
 
+
 def parse_all():
     base_url = "http://blogtruyen.com/truyen/one-piece/chap-"
     for count in range(1, 10):
-        parse_chapter(base_url+str(count), "Chapter"+str(count))
+        parse_chapter(base_url + str(count), "Chapter" + str(count))
+
 
 def get_real_url(url):
     url = url.split('?')[0]
-    return  url
+    return url
+
 
 def parse_chapter(url, chapter):
     html = requests.get(url)
     b = BeautifulSoup(html.text)
-    results = b.findAll("article", {'id':'content'})
+    results = b.findAll("article", {'id': 'content'})
     for r in results:
         for child in r.children:
             if type(child) is Tag:
                 url = get_real_url(child['src'])
                 print save_image(url, chapter)
+
+def parse_hkgh():
+    url = "http://blogtruyen.com/truyen/hiep-khach-giang-ho"
+    html = requests.get(url)
+    b = BeautifulSoup(html.text)
+    list_chapter = b.find('div', {'id': 'list-chapters'})
