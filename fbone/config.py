@@ -30,6 +30,7 @@ class BaseConfig(object):
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     UPLOAD_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'uploads')
     make_dir(UPLOAD_FOLDER)
+    DEBUG_TB_INTERCEPT_REDIRECTS = True
 
 
 class DefaultConfig(BaseConfig):
@@ -66,12 +67,12 @@ class DefaultConfig(BaseConfig):
     # Flask-openid: http://pythonhosted.org/Flask-OpenID/
     OPENID_FS_STORE_PATH = os.path.join(INSTANCE_FOLDER_PATH, 'openid')
     make_dir(OPENID_FS_STORE_PATH)
-    MONGODB_SETTINGS = {'DB': "social_read"}
+    MONGODB_SETTINGS = {'DB': "manga"}
     DEBUG_TB_PROFILER_ENABLED = True
 
 class TestConfig(BaseConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
-    MONGODB_SETTINGS = {'DB': "test_social_read"}
+    MONGODB_SETTINGS = {'DB': "test_manga"}
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_DATABASE_URI = 'sqlite://'

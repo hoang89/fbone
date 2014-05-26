@@ -13,9 +13,9 @@ from .frontend import frontend
 from .api import api
 from .admin import admin
 from .utils import INSTANCE_FOLDER_PATH
-from .logs import logs
 from .content import content
-from extensions import init_extensions
+from .manga import manga
+from .category import mcategory
 
 
 # For import *
@@ -27,8 +27,9 @@ DEFAULT_BLUEPRINTS = (
     settings,
     api,
     admin,
-    logs,
     content,
+    manga,
+    mcategory
 )
 
 
@@ -104,9 +105,6 @@ def configure_extensions(app):
     # init debug toolbar
     toolbar = DebugToolbarExtension(app)
 
-    init_extensions(app)
-
-
 def configure_blueprints(app, blueprints):
     """Configure blueprints in views."""
 
@@ -137,7 +135,7 @@ def configure_logging(app):
 
     # Set info level on logger, which might be overwritten by handers.
     # Suppress DEBUG messages.
-    app.logger.setLevel(logging.INFO)
+    app.logger.setLevel(logging.DEBUG)
 
     info_log = os.path.join(app.config['LOG_FOLDER'], 'info.log')
     info_file_handler = logging.handlers.RotatingFileHandler(info_log, maxBytes=100000, backupCount=10)

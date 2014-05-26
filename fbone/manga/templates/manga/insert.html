@@ -1,0 +1,10 @@
+{% from "macros/_form.html" import render_form %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+<div class="container">
+    <h2>Insert manga</h2>
+    {{ render_form(url_for('manga.insert'), form) }}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "layouts/base.html" %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                {{ render_form(url_for('mcategory.insert'), horizontal=True, form=form) }}
+            </div>
+            <div class="span12">
+                <table class="table table-bordered">
+                    <thead>
+                    <th>Name</th>
+                    <th>Language</th>
+                    </thead>
+                    <tbody>
+                    {% for cate in categories %}
+                        <tr>
+                            <td>{{ cate.name }}</td>
+                            <td>{{ cate.language }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+            <div class="span12">
+                <table class="table table-bordered">
+                    <thead>
+                    <th>Name</th>
+                    <th>Value</th>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ item.name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Author</td>
+                        <td>{{ item.author }}</td>
+                    </tr>
+                    <tr>
+                        <td>Painter</td>
+                        <td>{{ item.painter }}</td>
+                    </tr>
+                    <tr>
+                        <td>Description</td>
+                        <td>{{ item.desc }}</td>
+                    </tr>
+                    <tr>
+                        <td>Created</td>
+                        <td>{{ item.created_at }}</td>
+                    </tr>
+                    <tr>
+                        <td>Read</td>
+                        <td>{{ item.read_count }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>{{ item.status }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="span12">
+                <a href="{{ url_for('manga.ChapterView:add_vechai', id=item.id) }}"><button class="btn btn-large btn-primary">Add chapter</button></a>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
