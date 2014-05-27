@@ -1,0 +1,40 @@
+{% extends "layouts/base.html" %}
+{% from 'macros/_misc.html' import render_pagination_not_url %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+
+            </div>
+            <div class="span12">
+                <table class="table table-bordered">
+                    <thead>
+                    <th>Name</th>
+                    <th>Chapter</th>
+                    <th>Page</th>
+                    <th>Avatar</th>
+                    <th>Time</th>
+                    </thead>
+                    <tbody>
+                    {% for item in items %}
+                        <tr>
+                            <td><a href="{{ url_for('manga.ChapterView:detail', id=item.id) }}">{{ item.name }}</a></td>
+                            <td>{{ item.chapter }}</td>
+                            <td>{{ item.page }}</td>
+                            <td><img src="{{ item.avatar }}" width="10%" height="10%"></td>
+                            <td>{{ item.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="widget-foot">
+                {% if pages and pages.pages > 0 %}
+                    {{ render_pagination_not_url(pages, url_for('manga.ChapterView:index', id=id)) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

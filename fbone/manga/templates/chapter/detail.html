@@ -1,0 +1,24 @@
+{% extends "layouts/base.html" %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+
+            <div class="span12">
+                <table class="table table-bordered">
+                    <thead>
+                    <th>{{ chapter.name }}</th>
+                    </thead>
+                    <tbody>
+                    {% for link in chapter.links %}
+                        <tr>
+                            <td><img src="{{ link }}" width="100%" height="100%"></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

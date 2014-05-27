@@ -13,11 +13,11 @@ class Link(db.EmbeddedDocument):
 
 class ChapterInfo(db.Document):
     manga = ReferenceField('MangaInfo', dbref=False)
-    chapter = IntField()
+    chapter = StringField()
     name = StringField()
     page = IntField()
     avatar = StringField()
-    links = ListField(EmbeddedDocumentField(Link))
+    links = ListField(StringField())
     created_at = DateTimeField()
 
     def to_chapter(self):

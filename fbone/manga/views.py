@@ -1,5 +1,5 @@
 __author__ = 'hoangnn'
-from flask import Blueprint, render_template, flash, jsonify, redirect, url_for
+from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request
 from tools import create_manga
 from forms import InsertForm, MangaForm
 from models import ChapterInfo, MangaInfo
@@ -62,12 +62,17 @@ class MangaView(FlaskView):
 class ChapterView(FlaskView):
     route_base = "chapter"
 
-    @route('/add_vechai/<string:id>')
-    def add_vechai(self, id):
-        next_chapter = ChapterInfo.get_next_chapter(manga=id)
-        print next_chapter
-        print '--'*100
-        return render_template('chapter/add_vechai.html')
+    @route('/<string:id>')
+    def index(self, id):
+        page = int(request.args.get('page', 1))
+        pages = ChapterInfo.objects(manga=id).exclude("links").paginate(page=page, per_page=10)
+        return render_template('chapter/index.html', items=pages.items, pages=pages, id=id)
+
+    @route('/detail/<id>')
+    def detail(self, id):
+        chapter = ChapterInfo.objects(id=id).first()
+        return render_template('chapter/detail.html', chapter=chapter)
+
 
 MangaView.register(manga)
 ChapterView.register(manga)

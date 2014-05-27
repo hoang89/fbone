@@ -10,6 +10,7 @@
             <div class="span12">
                 <table class="table table-bordered">
                     <thead>
+                    <th>Id</th>
                     <th>Name</th>
                     <th>Author</th>
                     <th>Painter</th>
@@ -19,6 +20,7 @@
                     <tbody>
                     {% for item in items %}
                         <tr>
+                            <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">{{ item.id }}</a></td>
                             <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
                             <td>{{ item.author }}</td>
                             <td>{{ item.painter }}</td>
