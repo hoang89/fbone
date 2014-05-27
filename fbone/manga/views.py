@@ -1,41 +1,15 @@
 __author__ = 'hoangnn'
 from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request
 from tools import create_manga
-from forms import InsertForm, MangaForm
+from forms import InsertForm, MangaForm, InitForm, ChapterEditForm
 from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
 from datetime import datetime
+import urllib
 from fbone.utils import pretty_date
+from html_parse import parse_manga_link
 
 manga = Blueprint('manga', __name__, template_folder='templates')
-"""
-
-@manga.route('/')
-def index():
-    return 'Ok created'
-
-
-@manga.route('/insert', methods=['POST', 'GET'])
-def insert():
-    form = InsertForm()
-    if form.validate_on_submit():
-        chapter = form.chapter.data
-        base = form.base.data
-        max = form.max.data
-        create_manga(chapter=chapter, base=base, max=max)
-        flash("Success insert new manga")
-        return render_template('manga/insert.html', form=form)
-    else:
-        return render_template('manga/insert.html', form=form)
-
-@manga.route('/all')
-def all():
-    all = ChapterInfo.objects().exclude('links').order_by('chapter')
-    result = []
-    for i in all:
-        result.append(i.to_chapter())
-    return jsonify(res=result)
-"""
 
 
 class MangaView(FlaskView):
@@ -72,6 +46,17 @@ class MangaView(FlaskView):
             manga_info.save()
             return redirect(url_for('manga.MangaView:index'))
 
+    @route('/init/<string:id>', methods=['GET', 'POST'])
+    def init(self, id):
+        form = InitForm()
+        if request.method == 'GET':
+            return render_template('manga/init.html', form=form, id=id)
+        else:
+            url = form.url.data
+            parse_manga_link(url, id)
+            flash('Success init manga')
+            return redirect(url_for('manga.ChapterView:index', id=id))
+
 
 class ChapterView(FlaskView):
     route_base = "chapter"
@@ -86,6 +71,32 @@ class ChapterView(FlaskView):
     def detail(self, id):
         chapter = ChapterInfo.objects(id=id).first()
         return render_template('chapter/detail.html', chapter=chapter)
+
+    @route('/edit/<string:id>', methods=['GET','POST'])
+    def edit(self, id):
+        back = request.args.get('back')
+        print back
+        chapter_info = ChapterInfo.objects(id=id).first()
+        form = ChapterEditForm(obj=chapter_info)
+        if request.method == 'GET':
+            return render_template('chapter/edit.html', form=form, chapter=chapter_info, back=back)
+        else:
+            chapter_info.name = form.name.data
+            chapter_info.page = form.page.data
+            chapter_info.avatar = form.avatar.data
+            chapter_info.chapter = form.chapter.data
+            chapter_info.save()
+            return redirect(urllib.unquote(back).decode('utf-8')) if back else redirect(url_for('manga.ChapterView:index', id=chapter_info.manga.id))
+            #return redirect(url_for('manga.ChapterView:index', id=chapter_info.manga.id))
+
+    @route('/remove_img/')
+    def remove_img(self):
+        id = request.args.get('id')
+        image = request.args.get('image')
+        back = request.args.get('back')
+        print id, image
+        back = urllib.unquote(back).decode('utf-8')
+        return redirect(back)
 
 
 @manga.context_processor
