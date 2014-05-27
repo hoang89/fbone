@@ -24,7 +24,7 @@
                             <td>{{ item.chapter }}</td>
                             <td>{{ item.page }}</td>
                             <td><img src="{{ item.avatar }}" width="10%" height="10%"></td>
-                            <td>{{ item.created_at }}</td>
+                            <td>{{ format_date(item.created_at) }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

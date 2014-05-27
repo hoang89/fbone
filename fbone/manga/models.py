@@ -19,6 +19,7 @@ class ChapterInfo(db.Document):
     avatar = StringField()
     links = ListField(StringField())
     created_at = DateTimeField()
+    modified_at = DateTimeField()
 
     def to_chapter(self):
         chapter = {
@@ -33,6 +34,7 @@ class ChapterInfo(db.Document):
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
+        self.modified_at = datetime.utcnow()
         return super(ChapterInfo, self).save(*args, **kwargs)
 
     @classmethod
@@ -49,8 +51,10 @@ class MangaInfo(db.Document):
     created_at = DateTimeField()
     read_count = IntField(default=0)
     status = IntField(default=ACTIVE)
+    modified_at = DateTimeField()
 
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
+        self.modified_at = datetime.utcnow()
         return super(MangaInfo, self).save(*args, **kwargs)

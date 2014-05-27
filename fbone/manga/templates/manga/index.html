@@ -5,27 +5,32 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-
+                <button class="btn btn-primary pull-right">Add</button>
             </div>
+        </div>
+        <hr>
+        <div class="row-fluid">
             <div class="span12">
                 <table class="table table-bordered">
                     <thead>
-                    <th>Id</th>
                     <th>Name</th>
                     <th>Author</th>
                     <th>Painter</th>
                     <th>Language</th>
                     <th>Read</th>
+                    <th>Chapter</th>
+                    <th>Action</th>
                     </thead>
                     <tbody>
                     {% for item in items %}
                         <tr>
-                            <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">{{ item.id }}</a></td>
                             <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
                             <td>{{ item.author }}</td>
                             <td>{{ item.painter }}</td>
                             <td>{{ item.language }}</td>
                             <td>{{ item.read_count }}</td>
+                            <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">Chapter list</a></td>
+                            <td><a href="{{ url_for("manga.MangaView:edit", id=item.id) }}">Edit manga</a></td>
                         </tr>
                     {% endfor %}
                     </tbody>

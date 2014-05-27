@@ -30,7 +30,7 @@ class BaseConfig(object):
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     UPLOAD_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'uploads')
     make_dir(UPLOAD_FOLDER)
-    DEBUG_TB_INTERCEPT_REDIRECTS = True
+    DEBUG_TB_INTERCEPT_REDIRECTS = False
 
 
 class DefaultConfig(BaseConfig):
@@ -38,7 +38,7 @@ class DefaultConfig(BaseConfig):
     DEBUG = True
 
     # Flask-Sqlalchemy: http://packages.python.org/Flask-SQLAlchemy/config.html
-    SQLALCHEMY_ECHO = True
+    SQLALCHEMY_ECHO = False
     # SQLITE for prototyping.
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + INSTANCE_FOLDER_PATH + '/db.sqlite'
     # MYSQL for production.

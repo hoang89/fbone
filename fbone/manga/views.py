@@ -4,6 +4,9 @@ from tools import create_manga
 from forms import InsertForm, MangaForm
 from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
+from datetime import datetime
+from fbone.utils import pretty_date
+
 manga = Blueprint('manga', __name__, template_folder='templates')
 """
 
@@ -34,6 +37,7 @@ def all():
     return jsonify(res=result)
 """
 
+
 class MangaView(FlaskView):
     route_base = "manga"
 
@@ -41,7 +45,7 @@ class MangaView(FlaskView):
         items = MangaInfo.objects()
         return render_template('manga/index.html', items=items)
 
-    @route('/create', methods=['GET','POST'])
+    @route('/create', methods=['GET', 'POST'])
     def create(self):
         form = MangaForm()
         if form.validate_on_submit():
@@ -57,6 +61,16 @@ class MangaView(FlaskView):
         item = MangaInfo.objects(id=id).first()
         return render_template('manga/detail.html', item=item)
 
+    @route('/edit/<string:id>', methods=['GET', 'POST'])
+    def edit(self, id):
+        manga_info = MangaInfo.objects(id=id).first()
+        form = MangaForm(obj=manga_info)
+        if request.method == 'GET':
+            return render_template('manga/edit.html', form=form, id=id)
+        else:
+            form.populate_obj(manga_info)
+            manga_info.save()
+            return redirect(url_for('manga.MangaView:index'))
 
 
 class ChapterView(FlaskView):
@@ -68,10 +82,18 @@ class ChapterView(FlaskView):
         pages = ChapterInfo.objects(manga=id).exclude("links").paginate(page=page, per_page=10)
         return render_template('chapter/index.html', items=pages.items, pages=pages, id=id)
 
-    @route('/detail/<id>')
+    @route('/detail/<string:id>')
     def detail(self, id):
         chapter = ChapterInfo.objects(id=id).first()
         return render_template('chapter/detail.html', chapter=chapter)
+
+
+@manga.context_processor
+def utility_processor():
+    def format_date(date):
+        return pretty_date(date)
+
+    return dict(format_date=format_date)
 
 
 MangaView.register(manga)
