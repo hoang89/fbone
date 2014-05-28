@@ -109,6 +109,7 @@ class MangaLinkView(FlaskView):
         paginates = MangaLink.objects().paginate(page=page, per_page=10)
         return render_template('links/index.html', paginates=paginates)
 
+    @route('/all')
     def all(self):
         """
         Get all managa from bog truyen
