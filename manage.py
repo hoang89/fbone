@@ -16,8 +16,8 @@ manager = Manager(app)
 def run():
     """Run in local machine."""
 
-    app.run(threaded=True, port=5511, host='0.0.0.0')
-
+    #app.run(threaded=True, port=5511, host='0.0.0.0')
+    app.run(threaded=True)
 
 @manager.command
 def initdb():

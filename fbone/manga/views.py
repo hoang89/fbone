@@ -5,7 +5,8 @@ from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEdi
 from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
 from datetime import datetime
-import urllib
+import urllib, requests
+from bs4 import BeautifulSoup
 from fbone.utils import pretty_date
 from html_parse import parse_manga_link, parse_all_manga_from_blog_truyen, parse_all_chapter_from_blog_truyen
 from html_parse import complete_maga_info
@@ -163,6 +164,15 @@ class MangaLinkView(FlaskView):
             return redirect(back) if back else redirect(url_for('manga.MangaLinkView:detail', id=id))
         else:
             return render_template('links/edit.html', form=form, manga=manga_link)
+
+    def test(self):
+        data = {'Url':'tatca', 'PageIndex':'2', 'OrderBy':'3'}
+        response = requests.post('http://blogtruyen.com/ListStory/GetListStory', data=data)
+        print response.headers
+        b = BeautifulSoup(response.content)
+        all_title = b.find_all('span', class_='tiptip fs-12 ellipsis')
+        print len(all_title)
+        return response.content
 
 @manga.context_processor
 def utility_processor():

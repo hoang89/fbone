@@ -103,17 +103,16 @@ def parse_all_manga_from_blog_truyen():
     inserted_manga_count = 0
     while True:
         print str(PageIndex)
-        data = {'Url': 'tatca', 'OrderBy': '1', 'PageIndex': str(PageIndex)}
-        html = requests.post(link, data)
-
+        data = {'Url': 'tatca', 'OrderBy': '3', 'PageIndex': str(PageIndex)}
+        html = requests.post(link, data=data)
         if html.status_code != 200:
             return 'Quit not found at page ' + str(PageIndex) + ' inserted: ' + inserted_manga_count
 
-        b = BeautifulSoup(html.text)
+        b = BeautifulSoup(html.content)
         all_title = b.find_all('span', class_='tiptip fs-12 ellipsis')
         all_content = b.find_all('div', class_='hidden tiptip-content')
         if len(all_title) <= 0:
-            print all_content
+            print all_title
             return 'Quit empty at page ' + str(PageIndex) + ' inserted: ' + str(inserted_manga_count)
 
         if len(all_title) != len(all_content):
