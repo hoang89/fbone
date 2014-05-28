@@ -7,11 +7,11 @@
             <div class="span12">
                 <p>
                     {% if not item.detail %}
-                    <a href="{{ url_for('manga.MangaLinkView:complete', id=item.id, back=request.url) }}">
-                        <button class="btn btn-primary btn-primary">Complete
-                            info
-                        </button>
-                    </a>
+                        <a href="{{ url_for('manga.MangaLinkView:complete', id=item.id, back=request.url) }}">
+                            <button class="btn btn-primary btn-primary">Complete
+                                info
+                            </button>
+                        </a>
                     {% endif %}
                     <a href="{{ url_for('manga.MangaLinkView:edit', id=item.id, back=request.url) }}">
                         <button class="btn btn-primary btn-primary">Edit info
@@ -22,7 +22,11 @@
                         <button class="btn btn-primary btn-primary">Refresh chapter info
                         </button>
                     </a>
-                    <button class="btn btn-primary btn-danger">Sync to public</button>
+                    {% if item.author %}
+                        <a href="{{ url_for('manga.MangaLinkView:sync', id=item.id) }}">
+                            <button class="btn btn-primary btn-danger">Sync to public</button>
+                        </a>
+                    {% endif %}
                 </p>
             </div>
         </div>

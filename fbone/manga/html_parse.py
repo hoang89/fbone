@@ -41,7 +41,10 @@ def read_chapter_link(path):
 
 
 def get_chapter_file_link(chapter_url):
-    print chapter_url
+    """
+    Get all chapter info from blog truyen
+    chapter_link: link to blog truyen chapter
+    """
     chapter_info = {}
     html = requests.get(chapter_url)
     html.encoding = "utf-8"
@@ -63,18 +66,27 @@ def get_chapter_file_link(chapter_url):
     return chapter_info
 
 
-def parse_manga_link(root, manga_id):
-    # Lay tat ca cac chapter link
+def parse_all_chapter_to_db(root, manga_id):
+    """
+    Craw all chapter image from blog truyen and save to database
+    """
     all = get_all_chapter_links(root)
+    parse_manga_link(all, manga_id)
+
+
+def parse_manga_link(all, manga_id):
+    """
+    With each link in all link, craw info from blog truyen and save it to database
+    If link was craw before, ignore it
+    """
     manga = MangaInfo.objects(id=manga_id).first()
     if manga is None:
         raise RuntimeError("manga not exist")
-        # voi moi chapter link lay tat ca cac link anh
-    # add vao db
+
     counter = 0
     for link in all:
         chapter_info = get_chapter_file_link(link.strip())
-        cif = ChapterInfo.objects(name=chapter_info['name']).first()
+        cif = ChapterInfo.objects(name=chapter_info['name'], manga=manga).first()
         if not cif:
             cif = ChapterInfo()
         cif.name = chapter_info['name']
@@ -86,17 +98,13 @@ def parse_manga_link(root, manga_id):
         cif.save()
 
 
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        raise RuntimeError('Must apply manga id and link')
-    root = sys.argv[1]
-    manga_id = sys.argv[2]
-    parse_manga_link(root, manga_id)
-
-
 # link all manga: http://blogtruyen.com/danhsach/tatca
 
 def parse_all_manga_from_blog_truyen():
+    """
+    Get all available story from blog truyen
+    Save story info to database, ignore saved story
+    """
     link = "http://blogtruyen.com/ListStory/GetListStory"
     base_link = "http://blogtruyen.com"
     PageIndex = 1
@@ -140,6 +148,7 @@ def parse_all_manga_from_blog_truyen():
                     manga.save()
         PageIndex += 1
 
+
 def parse_all_chapter_from_blog_truyen(manga_id):
     manga_link = MangaLink.objects(id=manga_id).first()
     if manga_link is None:
@@ -150,7 +159,12 @@ def parse_all_chapter_from_blog_truyen(manga_id):
         manga_link.save()
         return len(all)
 
+
 def parse_manga_detail_from_blog_truyen(link):
+    """
+    When we have link to story, we craw detail info of story and save it
+    to database
+    """
     html = requests.get(link)
     manga_info = {}
     if html.status_code != 200:
@@ -167,7 +181,8 @@ def parse_manga_detail_from_blog_truyen(link):
     manga_info['desc'] = unicode(desc).encode('utf-8')
     return manga_info
 
-def complete_maga_info(manga_id):
+
+def complete_manga_info(manga_id):
     manga_link = MangaLink.objects(id=manga_id).first()
     link = manga_link.link
     manga_info = parse_manga_detail_from_blog_truyen(link)

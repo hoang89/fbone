@@ -9,7 +9,7 @@ import urllib, requests
 from bs4 import BeautifulSoup
 from fbone.utils import pretty_date
 from html_parse import parse_manga_link, parse_all_manga_from_blog_truyen, parse_all_chapter_from_blog_truyen
-from html_parse import complete_maga_info
+from html_parse import complete_manga_info, parse_all_chapter_to_db
 
 manga = Blueprint('manga', __name__, template_folder='templates')
 
@@ -55,7 +55,7 @@ class MangaView(FlaskView):
             return render_template('manga/init.html', form=form, id=id)
         else:
             url = form.url.data
-            parse_manga_link(url, id)
+            parse_all_chapter_to_db(url, id)
             flash('Success init manga')
             return redirect(url_for('manga.ChapterView:index', id=id))
 
@@ -137,6 +137,8 @@ class MangaLinkView(FlaskView):
             flash('Complete manga info first', 'error')
         if not manga_link.chapters:
             flash('Get all chapter first', 'error')
+        if not manga_link.author:
+            flash('Edit manga info before sync', 'error')
         return render_template('links/detail.html', item=manga_link)
 
     @route('/complete/<string:id>')
@@ -144,7 +146,7 @@ class MangaLinkView(FlaskView):
         back = request.args.get('back')
         if back:
             back = urllib.unquote(back).encode('utf-8')
-        complete_maga_info(manga_id=id)
+        complete_manga_info(manga_id=id)
         return redirect(back) if back else redirect(url_for('manga.MangaLinkView:detail', id=id))
 
     @route('/edit/<string:id>', methods=['GET', 'POST'])
@@ -165,14 +167,27 @@ class MangaLinkView(FlaskView):
         else:
             return render_template('links/edit.html', form=form, manga=manga_link)
 
-    def test(self):
-        data = {'Url':'tatca', 'PageIndex':'2', 'OrderBy':'3'}
-        response = requests.post('http://blogtruyen.com/ListStory/GetListStory', data=data)
-        print response.headers
-        b = BeautifulSoup(response.content)
-        all_title = b.find_all('span', class_='tiptip fs-12 ellipsis')
-        print len(all_title)
-        return response.content
+    @route('/sync/<string:id>', methods=['GET', 'POST'])
+    def sync(self, id):
+        manga_link = MangaLink.objects(id=id).first()
+        manga_info = MangaInfo.objects(original_link=manga_link.link).first()
+        if manga_info:
+            redirect(url_for('manga.MangaView:detail', id=manga_info.id))
+        else:
+            manga_info = MangaInfo()
+            manga_info.name = manga_link.name
+            manga_info.author = manga_link.author
+            manga_info.painter = manga_link.painter
+            manga_info.desc = manga_link.desc
+            manga_info.img = manga_link.img
+            manga_info.chapter = len(manga_link.chapters)
+            manga_info.original_link = manga_link.link
+            manga_info.save()
+            parse_all_chapter_to_db(manga_link.link, manga_info.id)
+            flash('Success init manga')
+            manga_link.sync_flag = True
+            manga_link.save()
+            return redirect(url_for('manga.ChapterView:index', id=manga_info.id))
 
 @manga.context_processor
 def utility_processor():

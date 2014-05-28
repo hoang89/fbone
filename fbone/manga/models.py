@@ -1,7 +1,7 @@
 __author__ = 'hoangnn'
 
 from fbone.extensions import mongo as db
-from mongoengine import StringField, ListField, IntField, DateTimeField, EmbeddedDocumentField, ReferenceField
+from mongoengine import StringField, ListField, IntField, DateTimeField, EmbeddedDocumentField, ReferenceField, BooleanField
 from datetime import datetime
 
 ACTIVE = 1
@@ -50,18 +50,24 @@ class MangaInfo(db.Document):
     name = StringField()
     author = StringField()
     painter = StringField()
-    language = StringField(default="EN")
+    language = StringField(default="VN")
     desc = StringField()
     img = StringField()
-    created_at = DateTimeField()
+    state = StringField()
+    chapter = IntField()
+    sync_links = ListField(StringField())
+    original_link = StringField()
     read_count = IntField(default=0)
-    status = IntField(default=ACTIVE)
+    status = IntField(default=INACTIVE)
+    created_at = DateTimeField()
     modified_at = DateTimeField()
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
         self.modified_at = datetime.utcnow()
         return super(MangaInfo, self).save(*args, **kwargs)
+
 
 class MangaLink(db.Document):
     link = StringField()
@@ -71,10 +77,12 @@ class MangaLink(db.Document):
     detail = StringField()
     author = StringField()
     painter = StringField()
-    language = StringField(default="EN")
+    language = StringField(default="VN")
     chapters = ListField(StringField())
+    sync_flag = BooleanField(default=False)
     created_at = DateTimeField()
     modified_at = DateTimeField()
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
