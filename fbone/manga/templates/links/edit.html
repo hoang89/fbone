@@ -1,0 +1,45 @@
+{% from "macros/_form.html" import render_form %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="span7">
+                <h2>Edit manga link</h2>
+                {{ render_form(url_for('manga.MangaLinkView:edit', id=manga.id), form) }}
+            </div>
+            {#
+            <div class="span5">
+                <img src="{{ form.img.data }}">
+            </div>
+             #}
+        </div>
+
+        <div class="row-fluid">
+            <div class="span12">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>Link Manga</td>
+                        <td><a href="{{ manga.link | safe }}"><b>{{ manga.link }}</b></a></td>
+                    </tr>
+                    <tr>
+                        <td>Name</td>
+                        <td><b>{{ manga.name | safe }}</b></td>
+                    </tr>
+                    <tr>
+                        <td>Desc</td>
+                        <td>{{ manga.desc |safe }}</td>
+                    </tr>
+                    <tr>
+                        <td>Detail</td>
+                        <td>{{ manga.detail |safe }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

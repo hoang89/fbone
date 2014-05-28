@@ -27,3 +27,11 @@ class ChapterEditForm(Form):
     page = IntegerField(validators=[Required()])
     avatar = StringField(validators=[Required()])
     submit = SubmitField(u'Edit chapter')
+
+class MangaLinkEditForm(Form):
+    name = StringField()
+    desc = TextAreaField()
+    author = StringField()
+    painter = StringField()
+    img = StringField()
+    submit = SubmitField(u'Edit link')

@@ -1,0 +1,79 @@
+{% extends "layouts/base.html" %}
+{% from "macros/_form.html" import render_form %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <p>
+                    {% if not item.detail %}
+                    <a href="{{ url_for('manga.MangaLinkView:complete', id=item.id, back=request.url) }}">
+                        <button class="btn btn-primary btn-primary">Complete
+                            info
+                        </button>
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('manga.MangaLinkView:edit', id=item.id, back=request.url) }}">
+                        <button class="btn btn-primary btn-primary">Edit info
+                        </button>
+                    </a>
+
+                    <a href="{{ url_for('manga.MangaLinkView:all_chapter', id=item.id, back=request.url) }}">
+                        <button class="btn btn-primary btn-primary">Refresh chapter info
+                        </button>
+                    </a>
+                    <button class="btn btn-primary btn-danger">Sync to public</button>
+                </p>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>Link Manga</td>
+                        <td><a href="{{ item.link | safe }}"><b>{{ item.link }}</b></a></td>
+                    </tr>
+                    <tr>
+                        <td>Name</td>
+                        <td><b>{{ item.name | safe }}</b></td>
+                    </tr>
+                    <tr>
+                        <td>Desc</td>
+                        <td>{{ item.desc |safe }}</td>
+                    </tr>
+                    <tr>
+                        <td>Detail</td>
+                        <td>{{ item.detail |safe }}</td>
+                    </tr>
+                    <tr>
+                        <td>Author</td>
+                        <td>{{ item.author }}</td>
+                    </tr>
+                    <tr>
+                        <td>Painter</td>
+                        <td>{{ item.painter }}</td>
+                    </tr>
+                    <tr>
+                        <td>Img</td>
+                        <td><img src="{{ item.img }}"></td>
+                    </tr>
+                    <tr>
+                        <td>Chapters</td>
+                        <td>
+                            <ul class="unstyled">
+                                {% for link in item.chapters %}
+                                    <a href="{{ link }}">
+                                        <li>{{ link }}</li>
+                                    </a>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

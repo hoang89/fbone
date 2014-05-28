@@ -57,9 +57,26 @@ class MangaInfo(db.Document):
     read_count = IntField(default=0)
     status = IntField(default=ACTIVE)
     modified_at = DateTimeField()
-
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
         self.modified_at = datetime.utcnow()
         return super(MangaInfo, self).save(*args, **kwargs)
+
+class MangaLink(db.Document):
+    link = StringField()
+    name = StringField()
+    img = StringField()
+    desc = StringField()
+    detail = StringField()
+    author = StringField()
+    painter = StringField()
+    language = StringField(default="EN")
+    chapters = ListField(StringField())
+    created_at = DateTimeField()
+    modified_at = DateTimeField()
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            self.created_at = datetime.utcnow()
+        self.modified_at = datetime.utcnow()
+        return super(MangaLink, self).save(*args, **kwargs)
