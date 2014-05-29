@@ -66,6 +66,12 @@ class MangaInfo(db.Document):
     created_at = DateTimeField()
     modified_at = DateTimeField()
 
+    def to_manga(self):
+        return {'id': str(self.id), 'name': self.name, 'author': self.author, 'painter': self.painter,
+                'desc': self.desc,
+                'img': self.img, 'state': self.state, 'chapter': self.chapter, 'comment': self.comment,
+                'read': self.read_count, 'modified': self.modified_at}
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
