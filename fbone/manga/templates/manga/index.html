@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% from "macros/_form.html" import render_form %}
+{% from 'macros/_misc.html' import render_pagination %}
 
 {% block body %}
     <div class="container-fluid">
@@ -25,7 +26,7 @@
                     <th>Action</th>
                     </thead>
                     <tbody>
-                    {% for item in items %}
+                    {% for item in items.items %}
                         <tr>
                             <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
                             <td>{{ item.author }}</td>
@@ -39,6 +40,11 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+        <div class="widget-foot">
+            {% if items and items.pages > 0 %}
+                {{ render_pagination(items, 'manga.MangaView:index') }}
+            {% endif %}
         </div>
     </div>
 {% endblock %}

@@ -21,6 +21,8 @@ class ChapterInfo(db.Document):
     page = IntField()
     avatar = StringField()
     links = ListField(StringField())
+    status = IntField(default=ACTIVE)
+    read_count = IntField(default=0)
     created_at = DateTimeField()
     modified_at = DateTimeField()
 
@@ -55,6 +57,8 @@ class MangaInfo(db.Document):
     img = StringField()
     state = StringField()
     chapter = IntField()
+    comment = StringField()
+    history_comment = ListField(StringField())
     sync_links = ListField(StringField())
     original_link = StringField()
     read_count = IntField(default=0)

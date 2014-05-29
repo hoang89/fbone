@@ -1,7 +1,8 @@
+from _ast import keyword
 from fbone.manga.models import MangaLink
-from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request
+from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request, session
 from tools import create_manga
-from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEditForm
+from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEditForm, MangaEditForm
 from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
 from datetime import datetime
@@ -10,15 +11,18 @@ from bs4 import BeautifulSoup
 from fbone.utils import pretty_date
 from html_parse import parse_manga_link, parse_all_manga_from_blog_truyen, parse_all_chapter_from_blog_truyen
 from html_parse import complete_manga_info, parse_all_chapter_to_db
+from fbone.decorators import admin_required
 
 manga = Blueprint('manga', __name__, template_folder='templates')
 
 
 class MangaView(FlaskView):
+    decorators = [admin_required]
     route_base = "manga"
 
     def index(self):
-        items = MangaInfo.objects()
+        page = int(request.args.get('page',1))
+        items = MangaInfo.objects().paginate(page=page, per_page=10)
         return render_template('manga/index.html', items=items)
 
     @route('/create', methods=['GET', 'POST'])
@@ -40,10 +44,12 @@ class MangaView(FlaskView):
     @route('/edit/<string:id>', methods=['GET', 'POST'])
     def edit(self, id):
         manga_info = MangaInfo.objects(id=id).first()
-        form = MangaForm(obj=manga_info)
+        form = MangaEditForm(obj=manga_info)
         if request.method == 'GET':
             return render_template('manga/edit.html', form=form, id=id)
         else:
+            if manga_info.comment:
+                manga_info.history_comment.append(manga_info.comment)
             form.populate_obj(manga_info)
             manga_info.save()
             return redirect(url_for('manga.MangaView:index'))
@@ -61,6 +67,7 @@ class MangaView(FlaskView):
 
 
 class ChapterView(FlaskView):
+    decorators = [admin_required]
     route_base = "chapter"
 
     @route('/<string:id>')
@@ -102,13 +109,23 @@ class ChapterView(FlaskView):
 
 
 class MangaLinkView(FlaskView):
+    decorators = [admin_required]
     route_base = "links"
 
     @route('/')
     def index(self):
+        key_word = session.get('links_key_word', None)
+        order = session.get('links_order', 'name')
+        key_word = request.args.get('key_word', key_word)
+        order = request.args.get('filter', order)
         page = int(request.args.get('page', 1))
-        paginates = MangaLink.objects().paginate(page=page, per_page=10)
-        return render_template('links/index.html', paginates=paginates)
+        if not key_word:
+            paginates = MangaLink.objects().order_by(('-'+order)).paginate(page=page, per_page=10)
+        else:
+            paginates = MangaLink.objects(name__icontains=key_word).order_by(('-'+order)).paginate(page=page, per_page=10)
+        session['links_key_word'] = key_word
+        session['links_order'] = order
+        return render_template('links/index.html', paginates=paginates, key_word=key_word, filter=order)
 
     @route('/all')
     def all(self):
@@ -196,6 +213,14 @@ def utility_processor():
 
     return dict(format_date=format_date)
 
+@manga.app_template_filter('status')
+def status(s):
+    if s == 1:
+        return u'ACTIVE'
+    if s == 0:
+        return u'INACTIVE'
+    if s == 2:
+        return u'DELETED'
 
 MangaView.register(manga)
 ChapterView.register(manga)

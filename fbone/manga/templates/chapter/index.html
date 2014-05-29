@@ -5,13 +5,20 @@
 {% block body %}
     <div class="container-fluid">
         <div class="row-fluid">
-            {% if not items %}
-                <div class="span12">
-                    <a href="{{ url_for('manga.MangaView:init', id=id) }}">
-                        <button class="btn btn-primary pull-right">Init All</button>
-                    </a>
-                </div>
-            {% endif %}
+            <div class="span12">
+                <a href="{{ url_for('manga.MangaView:detail', id=id) }}" class="pull-right">
+                    <button class="btn btn-primary">Manga View</button>
+                </a>
+
+                <a href="#" class="pull-right">
+                    <button class="btn btn-primary">Add chapter Link</button>
+                </a>
+
+                <a href="#" class="pull-right">
+                    <button class="btn btn-primary">Add chapter by hand</button>
+                </a>
+            </div>
+            <hr/>
             <div class="span12">
                 <table class="table table-bordered">
                     <thead>
@@ -31,17 +38,33 @@
                             <td><img src="{{ item.avatar }}" width="30%" height="30%"></td>
                             <td>{{ format_date(item.created_at) }}</td>
                             <td>
-                                <a href="{{ url_for('manga.ChapterView:edit', id=item.id, back=request.url|urlencode) }}">Edit</a>
+                                <a href="{{ url_for('manga.ChapterView:edit', id=item.id, back=request.url|urlencode) }}">
+                                    <button class="btn btn-small"><span class="icon icon-edit"></span> Edit</button>
+                                </a>
+                                <p class="divider"></p>
+                                {% if item.status == 1 %}
+                                    <button class="btn btn-danger btn-small"><span class="icon icon-adjust"></span>
+                                        Active
+                                    </button>
+                                {% else %}
+                                    <a href="#">
+                                        <button class="btn btn-danger btn-small"><span class="icon icon-adjust"></span>
+                                            Inactive
+                                        </button>
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
-            <div class="widget-foot">
-                {% if pages and pages.pages > 0 %}
-                    {{ render_pagination_not_url(pages, url_for('manga.ChapterView:index', id=id)) }}
-                {% endif %}
+            <div class="span12">
+                <div class="widget-foot">
+                    {% if pages and pages.pages > 0 %}
+                        {{ render_pagination_not_url(pages, url_for('manga.ChapterView:index', id=id)) }}
+                    {% endif %}
+                </div>
             </div>
         </div>
     </div>

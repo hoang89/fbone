@@ -1,6 +1,6 @@
 __author__ = 'hoangnn'
 
-from flask.ext.wtf import Form, StringField, IntegerField, Required, SubmitField, TextAreaField
+from flask.ext.wtf import Form, StringField, IntegerField, Required, SubmitField, TextAreaField, SelectField
 
 class InsertForm(Form):
     chapter = IntegerField(validators=[Required()])
@@ -16,6 +16,17 @@ class MangaForm(Form):
     desc = TextAreaField()
     img = StringField()
     submit = SubmitField(u'Add manga')
+
+class MangaEditForm(Form):
+    name = StringField(validators=[Required()])
+    status = SelectField(u'Status', choices=[('1', 'Active'),('0', 'Inactive'),('2', 'Delete')])
+    author = StringField(validators=[Required()])
+    painter = StringField()
+    language = StringField()
+    desc = TextAreaField()
+    img = StringField()
+    comment = TextAreaField()
+    submit = SubmitField(u'Edit manga')
 
 class InitForm(Form):
     url = StringField(validators=[Required()])

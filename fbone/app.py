@@ -27,7 +27,6 @@ DEFAULT_BLUEPRINTS = (
     settings,
     api,
     admin,
-    content,
     manga,
     mcategory
 )
