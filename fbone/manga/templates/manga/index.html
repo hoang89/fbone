@@ -3,48 +3,86 @@
 {% from 'macros/_misc.html' import render_pagination %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
+    <div class="row">
+        <form method="get" action="{{ request.url }}" class="form-horizontal">
 
+            <div class="span2">
+                <input type="name" name="keyword" placeholder="Manga name" class="input-medium"
+                       id="keyword"
+                       value="{{ keyword }}">
+            </div>
+            <div class="span3">
+                <select name="order">
+                    {% for order_type in ['author','painter', 'language', 'read_count', 'modified_at'] %}
+                        {% if order_type == order %}
+                            <option value="{{ order_type }}"
+                                    selected="true">{{ order_type | capitalize }}</option>
+                        {% else %}
+                            <option value="{{ order_type }}">{{ order_type | capitalize }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="span3">
+                <select name="status">
+                    {% if status == 1 %}
+                        <option value="1" selected>Active</option>
+                        <option value="0">Inactive</option>
+                    {% else %}
+                        <option value="1">Active</option>
+                        <option value="0" selected>Inactive</option>
+                    {% endif %}
+                </select>
+            </div>
+            <div class="span2">
+                <button class="btn btn-success" type="submit">Filter apply</button>
+            </div>
+            <div class="span2">
                 <a href="{{ url_for('manga.MangaView:create') }}">
-                    <button class="btn btn-primary pull-right">Add</button>
+                    <button class="btn btn-primary pull-right" type="button">Add new</button>
                 </a>
             </div>
+        </form>
+
+    </div>
+    <hr>
+    <div class="row">
+        <div class="span12">
+            <table class="table table-bordered">
+                <thead>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Painter</th>
+                <th>Language</th>
+                <th>Read</th>
+                <th>Status</th>
+                <th>Chapter</th>
+                <th>Action</th>
+                </thead>
+                <tbody>
+                {% for item in items.items %}
+                    <tr>
+                        <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
+                        <td>{{ item.author }}</td>
+                        <td>{{ item.painter }}</td>
+                        <td>{{ item.language }}</td>
+                        <td>{{ item.read_count }}</td>
+                        {% if item.status == 1 %}
+                            <td><button class="btn btn-success">{{ item.status | status }}</button></td>
+                        {% else %}
+                            <td><button class="btn btn-danger">{{ item.status | status }}</button></td>
+                        {% endif %}
+                        <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">Chapter list</a></td>
+                        <td><a href="{{ url_for("manga.MangaView:edit", id=item.id) }}">Edit manga</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-        <hr>
-        <div class="row-fluid">
-            <div class="span12">
-                <table class="table table-bordered">
-                    <thead>
-                    <th>Name</th>
-                    <th>Author</th>
-                    <th>Painter</th>
-                    <th>Language</th>
-                    <th>Read</th>
-                    <th>Chapter</th>
-                    <th>Action</th>
-                    </thead>
-                    <tbody>
-                    {% for item in items.items %}
-                        <tr>
-                            <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
-                            <td>{{ item.author }}</td>
-                            <td>{{ item.painter }}</td>
-                            <td>{{ item.language }}</td>
-                            <td>{{ item.read_count }}</td>
-                            <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">Chapter list</a></td>
-                            <td><a href="{{ url_for("manga.MangaView:edit", id=item.id) }}">Edit manga</a></td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="widget-foot">
-            {% if items and items.pages > 0 %}
-                {{ render_pagination(items, 'manga.MangaView:index') }}
-            {% endif %}
-        </div>
+    </div>
+    <div class="widget-foot">
+        {% if items and items.pages > 0 %}
+            {{ render_pagination(items, 'manga.MangaView:index') }}
+        {% endif %}
     </div>
 {% endblock %}

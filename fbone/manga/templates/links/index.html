@@ -36,6 +36,7 @@
                 <th>Desc</th>
                 <th>Img</th>
                 <th>Action</th>
+                <th>State</th>
                 </thead>
                 <tbody>
                 {% for item in paginates.items %}
@@ -52,6 +53,13 @@
                         {% else %}
                             <td>{{ item.chapters|length }} chapters</td>
                         {% endif %}
+                        <td>
+                            {% if item.sync_flag %}
+                            <p class="alert alert-success">Sync Success</p>
+                            {% else %}
+                            <p class="alert alert-error">Not Sync Yet</p>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

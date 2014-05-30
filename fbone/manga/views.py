@@ -15,15 +15,25 @@ from fbone.decorators import admin_required
 
 manga = Blueprint('manga', __name__, template_folder='templates')
 
+PER_PAGE = 2
 
 class MangaView(FlaskView):
     decorators = [admin_required]
     route_base = "manga"
 
     def index(self):
-        page = int(request.args.get('page',1))
-        items = MangaInfo.objects().paginate(page=page, per_page=10)
-        return render_template('manga/index.html', items=items)
+        page = int(request.args.get('page', 1))
+        keyword = request.args.get('keyword', session.get('manga_keyword', None))
+        order = request.args.get('order', session.get('manga_order', 'name'))
+        status = int(request.args.get('status', session.get('manga_status', '1')))
+        if keyword:
+            items = MangaInfo.objects(name__icontains=keyword, status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+        else:
+            items = MangaInfo.objects(status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+        session['manga_keyword'] = keyword
+        session['manga_order'] = order
+        session['manga_status'] = status
+        return render_template('manga/index.html', items=items, keyword=keyword, order=order, status=status)
 
     @route('/create', methods=['GET', 'POST'])
     def create(self):
@@ -120,9 +130,10 @@ class MangaLinkView(FlaskView):
         order = request.args.get('filter', order)
         page = int(request.args.get('page', 1))
         if not key_word:
-            paginates = MangaLink.objects().order_by(('-'+order)).paginate(page=page, per_page=10)
+            paginates = MangaLink.objects().order_by(('-' + order)).paginate(page=page, per_page=10)
         else:
-            paginates = MangaLink.objects(name__icontains=key_word).order_by(('-'+order)).paginate(page=page, per_page=10)
+            paginates = MangaLink.objects(name__icontains=key_word).order_by(('-' + order)).paginate(page=page,
+                                                                                                     per_page=10)
         session['links_key_word'] = key_word
         session['links_order'] = order
         return render_template('links/index.html', paginates=paginates, key_word=key_word, filter=order)
@@ -206,12 +217,14 @@ class MangaLinkView(FlaskView):
             manga_link.save()
             return redirect(url_for('manga.ChapterView:index', id=manga_info.id))
 
+
 @manga.context_processor
 def utility_processor():
     def format_date(date):
         return pretty_date(date)
 
     return dict(format_date=format_date)
+
 
 @manga.app_template_filter('status')
 def status(s):
@@ -221,6 +234,7 @@ def status(s):
         return u'INACTIVE'
     if s == 2:
         return u'DELETED'
+
 
 MangaView.register(manga)
 ChapterView.register(manga)

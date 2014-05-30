@@ -3,68 +3,71 @@
 {% from "macros/_form.html" import render_form %}
 
 {% block body %}
-    <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span12">
-                <a href="{{ url_for('manga.MangaView:detail', id=id) }}" class="pull-right">
-                    <button class="btn btn-primary">Manga View</button>
-                </a>
+    <div class="row-fluid">
+        <div class="span4">
+            <a href="{{ url_for('manga.MangaView:detail', id=id) }}" class="pull-right">
+                <button class="btn btn-primary">Manga View</button>
+            </a>
+        </div>
+        <div class="span4">
+            <a href="#" class="pull-right">
+                <button class="btn btn-primary">Add chapter Link</button>
+            </a>
+        </div>
+        <div class="span4">
+            <a href="#" class="pull-right">
+                <button class="btn btn-primary">Add chapter by hand</button>
+            </a>
+        </div>
+    </div>
+    <hr/>
+    <div class="row-fluid">
+        <div class="span12">
+            <table class="table table-bordered">
+                <thead>
+                <th>Name</th>
+                <th>Chapter</th>
+                <th>Page</th>
+                <th>Avatar</th>
+                <th>Time</th>
+                <th>Action</th>
+                </thead>
+                <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td><a href="{{ url_for('manga.ChapterView:detail', id=item.id) }}">{{ item.name }}</a></td>
+                        <td>{{ item.chapter }}</td>
+                        <td>{{ item.page }}</td>
+                        <td><img src="{{ item.avatar }}" width="30%" height="30%"></td>
+                        <td>{{ format_date(item.created_at) }}</td>
+                        <td>
+                            <a href="{{ url_for('manga.ChapterView:edit', id=item.id, back=request.url|urlencode) }}">
+                                <button class="btn btn-small"><span class="icon icon-edit"></span> Edit</button>
+                            </a>
 
-                <a href="#" class="pull-right">
-                    <button class="btn btn-primary">Add chapter Link</button>
-                </a>
-
-                <a href="#" class="pull-right">
-                    <button class="btn btn-primary">Add chapter by hand</button>
-                </a>
-            </div>
-            <hr/>
-            <div class="span12">
-                <table class="table table-bordered">
-                    <thead>
-                    <th>Name</th>
-                    <th>Chapter</th>
-                    <th>Page</th>
-                    <th>Avatar</th>
-                    <th>Time</th>
-                    <th>Action</th>
-                    </thead>
-                    <tbody>
-                    {% for item in items %}
-                        <tr>
-                            <td><a href="{{ url_for('manga.ChapterView:detail', id=item.id) }}">{{ item.name }}</a></td>
-                            <td>{{ item.chapter }}</td>
-                            <td>{{ item.page }}</td>
-                            <td><img src="{{ item.avatar }}" width="30%" height="30%"></td>
-                            <td>{{ format_date(item.created_at) }}</td>
-                            <td>
-                                <a href="{{ url_for('manga.ChapterView:edit', id=item.id, back=request.url|urlencode) }}">
-                                    <button class="btn btn-small"><span class="icon icon-edit"></span> Edit</button>
-                                </a>
-                                <p class="divider"></p>
-                                {% if item.status == 1 %}
+                            <p class="divider"></p>
+                            {% if item.status == 1 %}
+                                <button class="btn btn-danger btn-small"><span class="icon icon-adjust"></span>
+                                    Active
+                                </button>
+                            {% else %}
+                                <a href="#">
                                     <button class="btn btn-danger btn-small"><span class="icon icon-adjust"></span>
-                                        Active
+                                        Inactive
                                     </button>
-                                {% else %}
-                                    <a href="#">
-                                        <button class="btn btn-danger btn-small"><span class="icon icon-adjust"></span>
-                                            Inactive
-                                        </button>
-                                    </a>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="span12">
-                <div class="widget-foot">
-                    {% if pages and pages.pages > 0 %}
-                        {{ render_pagination_not_url(pages, url_for('manga.ChapterView:index', id=id)) }}
-                    {% endif %}
-                </div>
+                                </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="span12">
+            <div class="widget-foot">
+                {% if pages and pages.pages > 0 %}
+                    {{ render_pagination_not_url(pages, url_for('manga.ChapterView:index', id=id)) }}
+                {% endif %}
             </div>
         </div>
     </div>
