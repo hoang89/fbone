@@ -104,7 +104,7 @@ def configure_extensions(app):
     oid.init_app(app)
 
     # init debug toolbar
-    toolbar = DebugToolbarExtension(app)
+    #toolbar = DebugToolbarExtension(app)
 
 def configure_blueprints(app, blueprints):
     """Configure blueprints in views."""
