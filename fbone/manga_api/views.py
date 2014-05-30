@@ -16,7 +16,7 @@ class MangaApi(FlaskView):
         map(lambda x: result.append(x.to_manga()), list_obj)
         return result
     def _get_manga(self, page, order):
-        pages = MangaInfo.objects(status=ACTIVE).order_by(order).paginate(page=page, per_page=2)
+        pages = MangaInfo.objects(status=ACTIVE).order_by(order).paginate(page=page, per_page=10)
         mangas = pages.items
         res = {'data': self._to_json(mangas), 'has_next': pages.has_next, 'page': pages.page}
         return jsonify(res)
