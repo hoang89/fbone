@@ -8,7 +8,6 @@ DELETED = 2
 
 class MCategory(db.Document):
     name = StringField()
-    language = StringField(default="EN")
     status = IntField(default=ACTIVE)
     created_at = DateTimeField()
 

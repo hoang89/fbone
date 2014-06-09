@@ -1,8 +1,9 @@
-__author__ = 'hoangnn'
+# -*- coding: utf-8 -*-
 
 from fbone.extensions import mongo as db
 from mongoengine import StringField, ListField, IntField, DateTimeField, EmbeddedDocumentField, ReferenceField, BooleanField
 from datetime import datetime
+import re
 
 ACTIVE = 1
 INACTIVE = 0
@@ -16,7 +17,7 @@ class Link(db.EmbeddedDocument):
 
 class ChapterInfo(db.Document):
     manga = ReferenceField('MangaInfo', dbref=False)
-    chapter = StringField()
+    chapter = IntField()
     name = StringField()
     page = IntField()
     avatar = StringField()
@@ -57,9 +58,11 @@ class MangaInfo(db.Document):
     img = StringField()
     state = StringField()
     chapter = IntField()
+    current_chapter = IntField()
     comment = StringField()
     history_comment = ListField(StringField())
-    sync_links = ListField(StringField())
+    slug = StringField()
+    #sync_links = ListField(StringField())
     original_link = StringField()
     read_count = IntField(default=0)
     status = IntField(default=INACTIVE)
@@ -67,15 +70,30 @@ class MangaInfo(db.Document):
     modified_at = DateTimeField()
 
     def to_manga(self):
-        return {'id': str(self.id), 'name': self.name, 'author': self.author, 'painter': self.painter,
+        return {'id': str(self.id), 'name': self.name, 'author': self.author,
                 'desc': self.desc,
                 'img': self.img, 'state': self.state, 'chapter': self.chapter, 'comment': self.comment,
                 'read': self.read_count, 'modified': self.modified_at}
+
+    def Lower(self, s):
+        if type(s) == type(u""):
+              return s.lower()
+        return unicode(s, "utf8").lower().encode("utf8")
+
+    def convert(self, utf8_str):
+        INTAB = "ạảãàáâậầấẩẫăắằặẳẵóòọõỏôộổỗồốơờớợởỡéèẻẹẽêếềệểễúùụủũưựữửừứíìịỉĩýỳỷỵỹđ "
+        INTAB = [ch.encode('utf8') for ch in unicode(INTAB, 'utf8')]
+        OUTTAB = "a"*17 + "o"*17 + "e"*11 + "u"*11 + "i"*5 + "y"*5 + "d" + "-"
+        r = re.compile("|".join(INTAB))
+        replaces_dict = dict(zip(INTAB, OUTTAB))
+        return r.sub(lambda m: replaces_dict[m.group(0)], utf8_str)
 
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()
         self.modified_at = datetime.utcnow()
+        self.slug = self.convert(self.name.encode('utf8'))
+        print self.slug
         return super(MangaInfo, self).save(*args, **kwargs)
 
 

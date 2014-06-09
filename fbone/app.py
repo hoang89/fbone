@@ -13,7 +13,6 @@ from .frontend import frontend
 from .api import api
 from .admin import admin
 from .utils import INSTANCE_FOLDER_PATH
-from .content import content
 from .manga import manga
 from .category import mcategory
 from manga_api import manga_api

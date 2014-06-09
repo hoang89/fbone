@@ -5,6 +5,7 @@ import requests
 import csv, os, sys
 from models import ChapterInfo, MangaInfo, MangaLink
 from flask import abort
+import urllib
 
 
 def parse_chapter_links(url):
@@ -29,7 +30,7 @@ def get_all_chapter_links(url):
     for link in parse_chapter_links(url):
         l = link.find('a')
         if l and type(l) is Tag:
-            chapter = base + l.get('href') + '\n'
+            chapter = base + urllib.quote(l.get('href'))
             all.append(chapter)
     return all
 
@@ -39,13 +40,21 @@ def read_chapter_link(path):
         for line in file:
             yield line
 
+def parse_chapter(chapter):
+    try:
+        return int(chapter)
+    except:
+        return 100000
 
 def get_chapter_file_link(chapter_url):
     """
     Get all chapter info from blog truyen
     chapter_link: link to blog truyen chapter
     """
+    #chapter_url = urllib.quote(chapter_url)
+    print chapter_url
     chapter_info = {}
+
     html = requests.get(chapter_url)
     html.encoding = "utf-8"
     b = BeautifulSoup(html.text)
@@ -54,11 +63,12 @@ def get_chapter_file_link(chapter_url):
     title = h1.text
     chapter_info['name'] = title.strip()
     chapter_number = title.split(" ").pop()
-    chapter_info['chapter'] = chapter_number
+    chapter_info['chapter'] = parse_chapter(chapter_number)
     all_file_link = b.find('article', {'id': 'content'})
     all_imgs = all_file_link.find_all('img')
     links = []
     for img in all_imgs:
+        print img.get('src')
         links.append(img.get('src'))
     chapter_info['links'] = links
     chapter_info['page'] = len(links)
@@ -97,56 +107,80 @@ def parse_manga_link(all, manga_id):
         cif.links = chapter_info['links']
         cif.save()
 
+def add_manga_link(link, manga_id):
+    print link
+    chapter_info = get_chapter_file_link(link.strip())
+    manga = MangaInfo.objects(id=manga_id).first()
+    if manga is None:
+        raise RuntimeError("manga not exist")
+
+    cif = ChapterInfo.objects(name=chapter_info['name'], manga=manga).first()
+    if not cif:
+        cif = ChapterInfo()
+    """
+        cif.links = chapter_info['links']
+    else:
+        print cif.chapter
+        cif.update(pull_all__links=cif.links)
+        cif.update(push_all__links=chapter_info['links'])
+    """
+    cif.name = chapter_info['name']
+    cif.chapter = chapter_info['chapter']
+    cif.avatar = chapter_info['avatar']
+    cif.manga = manga
+    cif.page = chapter_info['page']
+    cif.links = chapter_info['links']
+    cif.save()
+
 
 # link all manga: http://blogtruyen.com/danhsach/tatca
 
-def parse_all_manga_from_blog_truyen():
+def parse_all_manga_from_blog_truyen(page):
     """
     Get all available story from blog truyen
     Save story info to database, ignore saved story
     """
     link = "http://blogtruyen.com/ListStory/GetListStory"
     base_link = "http://blogtruyen.com"
-    PageIndex = 1
+    PageIndex = page
     inserted_manga_count = 0
-    while True:
-        print str(PageIndex)
-        data = {'Url': 'tatca', 'OrderBy': '3', 'PageIndex': str(PageIndex)}
-        html = requests.post(link, data=data)
-        if html.status_code != 200:
-            return 'Quit not found at page ' + str(PageIndex) + ' inserted: ' + inserted_manga_count
 
-        b = BeautifulSoup(html.content)
-        all_title = b.find_all('span', class_='tiptip fs-12 ellipsis')
-        all_content = b.find_all('div', class_='hidden tiptip-content')
-        if len(all_title) <= 0:
-            print all_title
-            return 'Quit empty at page ' + str(PageIndex) + ' inserted: ' + str(inserted_manga_count)
+    data = {'Url': 'tatca', 'OrderBy': '3', 'PageIndex': str(PageIndex)}
+    html = requests.post(link, data=data)
 
-        if len(all_title) != len(all_content):
-            PageIndex += 1
-            continue
-            #raise RuntimeError('Result not valid')
-        for counter in range(0, len(all_title)):
-            title = all_title[counter]
-            content = all_content[counter]
-            if title and content and type(title) is Tag and type(content) is Tag:
-                url = title.find('a')
-                link = base_link + url.get('href')
-                manga = MangaLink.objects(link=link).first()
-                if not manga is None:
-                    continue
-                else:
-                    inserted_manga_count += 1
-                    manga = MangaLink()
-                    manga.link = link
-                    manga.name = url.string.encode('utf-8')
-                    img = content.find('img')
-                    manga.img = img.get('src')
-                    desc = content.find('div', class_='al-j fs-12')
-                    manga.desc = desc.string.encode('utf-8')
-                    manga.save()
-        PageIndex += 1
+    print data
+
+    if html.status_code != 200:
+        return 'Quit not found at page ' + str(PageIndex) + ' inserted: ' + inserted_manga_count
+
+    b = BeautifulSoup(html.content)
+    all_title = b.find_all('span', class_='tiptip fs-12 ellipsis')
+    all_content = b.find_all('div', class_='hidden tiptip-content')
+    if len(all_title) <= 0:
+        return 'Quit empty at page ' + str(PageIndex) + ' inserted: ' + str(inserted_manga_count)
+
+    if len(all_title) != len(all_content):
+        return
+
+    for counter in range(0, len(all_title)):
+        title = all_title[counter]
+        content = all_content[counter]
+        if title and content and type(title) is Tag and type(content) is Tag:
+            url = title.find('a')
+            link = base_link + url.get('href')
+            manga = MangaLink.objects(link=link).first()
+            if not manga is None:
+                continue
+            else:
+                inserted_manga_count += 1
+                manga = MangaLink()
+                manga.link = link
+                manga.name = url.string.encode('utf-8')
+                img = content.find('img')
+                manga.img = img.get('src')
+                desc = content.find('div', class_='al-j fs-12')
+                manga.desc = desc.string.encode('utf-8')
+                manga.save()
 
 
 def parse_all_chapter_from_blog_truyen(manga_id):

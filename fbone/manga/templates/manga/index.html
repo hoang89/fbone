@@ -28,9 +28,15 @@
                     {% if status == 1 %}
                         <option value="1" selected>Active</option>
                         <option value="0">Inactive</option>
-                    {% else %}
+                        <option value="2">All</option>
+                    {% elif status== 0 %}
                         <option value="1">Active</option>
                         <option value="0" selected>Inactive</option>
+                        <option value="2">All</option>
+                    {% else %}
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                        <option value="2" selected>All</option>
                     {% endif %}
                 </select>
             </div>

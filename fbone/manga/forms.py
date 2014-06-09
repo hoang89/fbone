@@ -37,6 +37,7 @@ class ChapterEditForm(Form):
     chapter = StringField(validators=[Required()])
     page = IntegerField(validators=[Required()])
     avatar = StringField(validators=[Required()])
+    chapter_status = SelectField(choices=[('1', 'Active'), ('0', 'Inactive'), ('3', 'Delete')])
     submit = SubmitField(u'Edit chapter')
 
 class MangaLinkEditForm(Form):
@@ -46,3 +47,7 @@ class MangaLinkEditForm(Form):
     painter = StringField()
     img = StringField()
     submit = SubmitField(u'Edit link')
+
+class AddLinkForm(Form):
+    url = StringField(validators=[Required()])
+    submit = SubmitField(u'Add Manga Chapter')

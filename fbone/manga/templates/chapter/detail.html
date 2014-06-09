@@ -13,7 +13,7 @@
                     <tbody>
                     {% for link in chapter.links %}
                         <tr>
-                            <td><img src="{{ link }}" width="100%" height="100%"></td>
+                            <td><img src="{{ link | safe}}" width="100%" height="100%"></td>
                         </tr>
                     {% endfor %}
                     </tbody>

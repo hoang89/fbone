@@ -2,7 +2,7 @@ from _ast import keyword
 from fbone.manga.models import MangaLink
 from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request, session
 from tools import create_manga
-from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEditForm, MangaEditForm
+from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEditForm, MangaEditForm, AddLinkForm
 from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
 from datetime import datetime
@@ -10,12 +10,13 @@ import urllib, requests
 from bs4 import BeautifulSoup
 from fbone.utils import pretty_date
 from html_parse import parse_manga_link, parse_all_manga_from_blog_truyen, parse_all_chapter_from_blog_truyen
-from html_parse import complete_manga_info, parse_all_chapter_to_db
+from html_parse import complete_manga_info, parse_all_chapter_to_db, add_manga_link
 from fbone.decorators import admin_required
 
 manga = Blueprint('manga', __name__, template_folder='templates')
 
-PER_PAGE = 2
+PER_PAGE = 10
+
 
 class MangaView(FlaskView):
     decorators = [admin_required]
@@ -26,10 +27,18 @@ class MangaView(FlaskView):
         keyword = request.args.get('keyword', session.get('manga_keyword', None))
         order = request.args.get('order', session.get('manga_order', 'name'))
         status = int(request.args.get('status', session.get('manga_status', '1')))
+
         if keyword:
-            items = MangaInfo.objects(name__icontains=keyword, status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+            if status != 2:
+                items = MangaInfo.objects(name__icontains=keyword, status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+            else:
+                items = MangaInfo.objects(name__icontains=keyword).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
         else:
-            items = MangaInfo.objects(status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+            if status != 2:
+                items = MangaInfo.objects(status=status).order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+            else:
+                items = MangaInfo.objects().order_by(('-' + order)).paginate(page=page, per_page=PER_PAGE)
+
         session['manga_keyword'] = keyword
         session['manga_order'] = order
         session['manga_status'] = status
@@ -75,7 +84,6 @@ class MangaView(FlaskView):
             flash('Success init manga')
             return redirect(url_for('manga.ChapterView:index', id=id))
 
-
 class ChapterView(FlaskView):
     decorators = [admin_required]
     route_base = "chapter"
@@ -117,6 +125,27 @@ class ChapterView(FlaskView):
         back = urllib.unquote(back).decode('utf-8')
         return redirect(back)
 
+    @route('/add_by_link/<string:id>', methods=['GET', 'POST'])
+    def add_by_link(self, id):
+        """
+        add new chapter from box truyen link
+        """
+        form = AddLinkForm()
+        back = request.args.get('back')
+        if form.validate_on_submit():
+            link = form.url.data
+            add_manga_link(link, manga_id=id)
+            return redirect(back) if back else redirect(url_for('manga.ChapterView:index', id=id))
+        else:
+            return render_template('chapter/add_link.html', form=form, id=id, back=back)
+
+    @route('/delete/<string:id>')
+    def chapter_del(self, id):
+        back = request.args.get('back')
+        chapter = ChapterInfo.objects(id=id).first()
+        chapter.delete()
+        flash('Success deleted chapter', 'success')
+        return redirect(urllib.unquote(back).decode('utf-8'))
 
 class MangaLinkView(FlaskView):
     decorators = [admin_required]
@@ -130,20 +159,22 @@ class MangaLinkView(FlaskView):
         order = request.args.get('filter', order)
         page = int(request.args.get('page', 1))
         if not key_word:
-            paginates = MangaLink.objects().order_by(('-' + order)).paginate(page=page, per_page=10)
+            paginates = MangaLink.objects().order_by((order)).paginate(page=page, per_page=10)
         else:
-            paginates = MangaLink.objects(name__icontains=key_word).order_by(('-' + order)).paginate(page=page,
+            paginates = MangaLink.objects(name__icontains=key_word).order_by((order)).paginate(page=page,
                                                                                                      per_page=10)
         session['links_key_word'] = key_word
         session['links_order'] = order
         return render_template('links/index.html', paginates=paginates, key_word=key_word, filter=order)
 
-    @route('/all')
-    def all(self):
+    @route('/all/<int:max>')
+    def all(self, max):
         """
         Get all managa from bog truyen
         """
-        all = parse_all_manga_from_blog_truyen()
+        for page in range(1, max):
+            all = parse_all_manga_from_blog_truyen(page)
+
         return jsonify(res=all)
 
     @route('/all_chapter/<string:id>')
@@ -198,7 +229,7 @@ class MangaLinkView(FlaskView):
     @route('/sync/<string:id>', methods=['GET', 'POST'])
     def sync(self, id):
         manga_link = MangaLink.objects(id=id).first()
-        manga_info = MangaInfo.objects(original_link=manga_link.link).first()
+        manga_info = MangaInfo.objects(original_link=manga_link.link, status=1).first()
         if manga_info:
             redirect(url_for('manga.MangaView:detail', id=manga_info.id))
         else:

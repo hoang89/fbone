@@ -12,7 +12,7 @@
                     </div>
                     <div class="span3">
                         <select name="filter" id="filter">
-                            {% for i in ['name', 'created_at', 'modified_at'] %}
+                            {% for i in ['name', 'created_at', '-modified_at'] %}
                                 {% if i == filter %}
                                     <option value="{{ i }}" selected="true">{{ i | capitalize }}</option>
                                 {% else %}
