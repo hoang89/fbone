@@ -60,7 +60,7 @@ class ChapterApi(FlaskView):
         except:
             page = 1
 
-        pages = ChapterInfo.objects(status=ACTIVE, manga=id).order_by('-chapter').paginate(page=page, per_page=10)
+        pages = ChapterInfo.objects(status=ACTIVE, manga=id).order_by('-chapter').paginate(page=page, per_page=1000)
         chapters = pages.items
         res = {'data': self._to_json(chapters), 'has_next': pages.has_next, 'page': pages.page}
         return jsonify(res)

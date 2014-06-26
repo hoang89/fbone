@@ -1,0 +1,14 @@
+{% from "macros/_form.html" import render_form %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <h2>Edit chapter</h2>
+                {{ render_form(url_for('manga.ChapterView:add_chapter_by_hand', id=id, back=back), form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

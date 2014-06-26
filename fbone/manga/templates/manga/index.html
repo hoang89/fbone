@@ -58,8 +58,6 @@
                 <thead>
                 <th>Name</th>
                 <th>Author</th>
-                <th>Painter</th>
-                <th>Language</th>
                 <th>Read</th>
                 <th>Status</th>
                 <th>Chapter</th>
@@ -70,8 +68,6 @@
                     <tr>
                         <td><a href="{{ url_for("manga.MangaView:detail", id=item.id) }}">{{ item.name }}</a></td>
                         <td>{{ item.author }}</td>
-                        <td>{{ item.painter }}</td>
-                        <td>{{ item.language }}</td>
                         <td>{{ item.read_count }}</td>
                         {% if item.status == 1 %}
                             <td><button class="btn btn-success">{{ item.status | status }}</button></td>
@@ -79,7 +75,14 @@
                             <td><button class="btn btn-danger">{{ item.status | status }}</button></td>
                         {% endif %}
                         <td><a href="{{ url_for("manga.ChapterView:index", id=item.id) }}">Chapter list</a></td>
-                        <td><a href="{{ url_for("manga.MangaView:edit", id=item.id) }}">Edit manga</a></td>
+                        <td>
+                            <a href="{{ url_for("manga.MangaView:edit", id=item.id) }}">
+                            <button class="btn btn-info">Edit</button>
+                            </a>
+                            <a href="{{ url_for("manga.MangaView:delete", id=item.id, back=request.url) }}">
+                            <button class="btn btn-danger">Delete</button>
+                            </a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

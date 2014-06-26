@@ -1,0 +1,46 @@
+{% from "macros/_form.html" import render_form %}
+
+{% extends "layouts/base.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <td>Name</td>
+                        <td>{{ result.name }}</td>
+                        <td><input type="text" name="name" value="{{ result.name }}"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Chapter</td>
+                        <td>{{ result.chapter }}</td>
+                        <td><input type="text" name="chapter" value="{{ result.chapter }}"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Page</td>
+                        <td>{{ result.page }}</td>
+                        <td><input type="text" name="page" value="{{ result.page }}"></td>
+                    </tr>
+
+                    <tr>
+                        <td>Avatar</td>
+                        <td><img src="{{ result.avatar }}"></td>
+                        <td><input type="text" name="avatar" value="{{ result.avatar }}"></td>
+                    </tr>
+                    {% for i in range(0, result.links|length) %}
+                    <tr>
+                        <td>Links {{ i }}</td>
+                        <td><img src="{{ result.links[i] }}"></td>
+                        <td><input type="text" name="links[]" value="{{ result.links[i] }}"></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

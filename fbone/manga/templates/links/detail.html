@@ -22,7 +22,7 @@
                         <button class="btn btn-primary btn-primary">Refresh chapter info
                         </button>
                     </a>
-                    {% if item.author and not item.sync_flag %}
+                    {% if item.author %}
                         <a href="{{ url_for('manga.MangaLinkView:sync', id=item.id) }}">
                             <button class="btn btn-primary btn-danger">Sync to public</button>
                         </a>

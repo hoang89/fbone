@@ -51,3 +51,11 @@ class MangaLinkEditForm(Form):
 class AddLinkForm(Form):
     url = StringField(validators=[Required()])
     submit = SubmitField(u'Add Manga Chapter')
+
+class AddChapterByHand(Form):
+    name = StringField("Chapter Name", validators=[Required()])
+    chapter = StringField("Chapter number", validators=[Required()])
+    avatar = StringField("Avatar image", validators=[Required()])
+    page = StringField("Page number")
+    links = TextAreaField("Image links")
+    submit = SubmitField(u'Add Manga Chapter')

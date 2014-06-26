@@ -117,13 +117,7 @@ def add_manga_link(link, manga_id):
     cif = ChapterInfo.objects(name=chapter_info['name'], manga=manga).first()
     if not cif:
         cif = ChapterInfo()
-    """
-        cif.links = chapter_info['links']
-    else:
-        print cif.chapter
-        cif.update(pull_all__links=cif.links)
-        cif.update(push_all__links=chapter_info['links'])
-    """
+
     cif.name = chapter_info['name']
     cif.chapter = chapter_info['chapter']
     cif.avatar = chapter_info['avatar']

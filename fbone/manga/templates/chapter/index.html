@@ -15,7 +15,7 @@
             </a>
         </div>
         <div class="span4">
-            <a href="#" class="pull-right">
+            <a href="{{ url_for('manga.ChapterView:add_chapter_by_hand', id=id, back=request.url) }}" class="pull-right">
                 <button class="btn btn-primary">Add chapter by hand</button>
             </a>
         </div>

@@ -16,6 +16,7 @@ from .utils import INSTANCE_FOLDER_PATH
 from .manga import manga
 from .category import mcategory
 from manga_api import manga_api
+from links import links
 
 
 # For import *
@@ -29,7 +30,8 @@ DEFAULT_BLUEPRINTS = (
     admin,
     manga,
     mcategory,
-    manga_api
+    manga_api,
+    links
 )
 
 

@@ -1,5 +1,6 @@
 from _ast import keyword
-from fbone.manga.models import MangaLink
+from fbone.manga.forms import AddChapterByHand
+from fbone.manga.models import MangaLink, DELETED
 from flask import Blueprint, render_template, flash, jsonify, redirect, url_for, request, session
 from tools import create_manga
 from forms import InsertForm, MangaForm, InitForm, ChapterEditForm, MangaLinkEditForm, MangaEditForm, AddLinkForm
@@ -84,6 +85,22 @@ class MangaView(FlaskView):
             flash('Success init manga')
             return redirect(url_for('manga.ChapterView:index', id=id))
 
+    @route('/delete/<string:id>')
+    def delete(self, id):
+        back = request.args.get('back')
+        manga_info = MangaInfo.objects(id=id).first()
+        if manga_info.status != DELETED:
+            flash("Cannot deleted this manga, please change status to delete first", 'error')
+            return redirect(urllib.unquote(back).decode('utf-8')) if back else redirect(
+                url_for('manga.MangaView:index'))
+
+        chapter_info = ChapterInfo.objects(manga=id)
+        manga_info.delete()
+        chapter_info.delete()
+        return redirect(urllib.unquote(back).decode('utf-8')) if back else redirect(
+                url_for('manga.MangaView:index'))
+
+
 class ChapterView(FlaskView):
     decorators = [admin_required]
     route_base = "chapter"
@@ -138,6 +155,17 @@ class ChapterView(FlaskView):
             return redirect(back) if back else redirect(url_for('manga.ChapterView:index', id=id))
         else:
             return render_template('chapter/add_link.html', form=form, id=id, back=back)
+
+
+    @route('/add_by_hand/<string:id>', methods=['GET', 'POST'])
+    def add_chapter_by_hand(self, id):
+        form = AddChapterByHand()
+        back = request.args.get('back')
+        if form.validate_on_submit():
+            return redirect(back) if back else redirect(url_for('manga.ChapterView:index', id=id))
+        else:
+            return render_template('chapter/add_hand.html', form=form, id=id, back=back)
+
 
     @route('/delete/<string:id>')
     def chapter_del(self, id):
