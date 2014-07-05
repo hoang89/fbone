@@ -38,6 +38,18 @@ class ChapterInfo(db.Document):
         }
         return chapter
 
+    def detail_json(self):
+        chapter = chapter = {
+            'chapter': self.chapter,
+            'name': self.name,
+            'page': self.page,
+            'avatar': self.avatar,
+            'created': self.created_at,
+            'id': str(self.id),
+            'links': self.links
+        }
+        return chapter
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             self.created_at = datetime.utcnow()

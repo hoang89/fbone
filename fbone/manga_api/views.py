@@ -3,9 +3,10 @@ __author__ = 'hoangnn'
 from flask import Blueprint, jsonify, request
 from flask.ext.classy import FlaskView, route
 from fbone.manga.models import *
+import json
 
 manga_api = Blueprint('manga-api', __name__, template_folder='templates')
-
+PER_PAGE = 1000
 
 class MangaApi(FlaskView):
     route_base = 'manga'
@@ -60,10 +61,15 @@ class ChapterApi(FlaskView):
         except:
             page = 1
 
-        pages = ChapterInfo.objects(status=ACTIVE, manga=id).order_by('-chapter').paginate(page=page, per_page=20)
+        pages = ChapterInfo.objects(status=ACTIVE, manga=id).order_by('-chapter').paginate(page=page, per_page=PER_PAGE)
         chapters = pages.items
         res = {'data': self._to_json(chapters), 'has_next': pages.has_next, 'page': pages.page}
         return jsonify(res)
+
+    @route('/detail/<string:id>')
+    def detail(self, id):
+        chapter = ChapterInfo.objects(id=id).first()
+        return jsonify(chapter.detail_json())
 
 
 MangaApi.register(manga_api)
