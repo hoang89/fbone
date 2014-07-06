@@ -6,7 +6,7 @@ from fbone.manga.models import *
 import json
 
 manga_api = Blueprint('manga-api', __name__, template_folder='templates')
-PER_PAGE = 1000
+PER_PAGE = 30
 
 class MangaApi(FlaskView):
     route_base = 'manga'
