@@ -66,6 +66,16 @@ class ChapterApi(FlaskView):
         res = {'data': self._to_json(chapters), 'has_next': pages.has_next, 'page': pages.page}
         return jsonify(res)
 
+    @route('/list/<string:id>')
+    def list(self, id):
+        try:
+            current = int(request.args.get('c', 0))
+        except:
+            current = 0
+        chapters = ChapterInfo.objects(chapter__gt=current, manga=id).order_by('-chapter')
+        res={'data': self._to_json(chapters)}
+        return jsonify(res)
+
     @route('/detail/<string:id>')
     def detail(self, id):
         chapter = ChapterInfo.objects(id=id).first()
