@@ -71,6 +71,7 @@ class MangaView(FlaskView):
             if manga_info.comment:
                 manga_info.history_comment.append(manga_info.comment)
             form.populate_obj(manga_info)
+            manga_info.updated_time = datetime.utcnow()
             manga_info.save()
             return redirect(url_for('manga.MangaView:index'))
 

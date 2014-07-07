@@ -51,7 +51,7 @@ class MangaApi(FlaskView):
         return self._get_manga(page=page, order='-read_count')
 
     def _top_new(self, page):
-        return self._get_manga(page=page, order='-modified_at')
+        return self._get_manga(page=page, order='-updated_time')
 
 class ChapterApi(FlaskView):
     route_base = 'chapter'

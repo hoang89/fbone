@@ -78,6 +78,7 @@ class MangaInfo(db.Document):
     original_link = StringField()
     read_count = IntField(default=0)
     status = IntField(default=INACTIVE)
+    updated_time = DateTimeField()
     created_at = DateTimeField()
     modified_at = DateTimeField()
 
