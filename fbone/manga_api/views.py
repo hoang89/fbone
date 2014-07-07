@@ -1,12 +1,15 @@
 __author__ = 'hoangnn'
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 from flask.ext.classy import FlaskView, route
 from fbone.manga.models import *
 import json
 
 manga_api = Blueprint('manga-api', __name__, template_folder='templates')
 PER_PAGE = 30
+NORMAL = 1
+NEW = 2
+READ = 3
 
 class MangaApi(FlaskView):
     route_base = 'manga'
@@ -27,22 +30,27 @@ class MangaApi(FlaskView):
             page = int(request.args.get('page', 1))
         except:
             page = 1
-        return self._get_manga(page=page, order='name')
 
-    @route('/top/read')
-    def top_read(self):
         try:
-            page = int(request.args.get('page', 1))
+            type = int(request.args.get('type', 1))
         except:
-            page = 1
+            type=1
+
+        if type == NORMAL:
+            return self._get_manga(page=page, order='name')
+
+        if type == NEW:
+            return self._top_new(page=page)
+
+        if type == READ:
+            return self._top_read(page=page)
+        else:
+            abort(404)
+
+    def _top_read(self, page):
         return self._get_manga(page=page, order='-read_count')
 
-    @route('/top/new')
-    def top_new(self):
-        try:
-            page = int(request.args.get('page', 1))
-        except:
-            page = 1
+    def _top_new(self, page):
         return self._get_manga(page=page, order='-modified_at')
 
 class ChapterApi(FlaskView):
