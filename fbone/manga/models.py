@@ -74,6 +74,8 @@ class MangaInfo(db.Document):
     comment = StringField()
     history_comment = ListField(StringField())
     slug = StringField()
+    source = StringField()
+    translator = StringField()
     #sync_links = ListField(StringField())
     original_link = StringField()
     read_count = IntField(default=0)

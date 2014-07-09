@@ -128,3 +128,18 @@ table .headerSortUp:after {
     border: 0 !important
 }
 
+.top_read_item, .top_new_item {
+	background:#EEE;
+	border:1px solid #999;
+	float:left;
+    margin-bottom: 5px;
+	box-sizing:border-box;
+	border-radius:1px;
+}
+
+.manga_name {
+    text-overflow: ellipsis;
+    max-height: 2.8em;
+    line-height: 1.4em;
+}
+

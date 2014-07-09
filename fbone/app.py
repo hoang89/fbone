@@ -17,6 +17,7 @@ from .manga import manga
 from .category import mcategory
 from manga_api import manga_api
 from links import links
+from home import home
 
 
 # For import *
@@ -31,7 +32,8 @@ DEFAULT_BLUEPRINTS = (
     manga,
     mcategory,
     manga_api,
-    links
+    links,
+    home
 )
 
 

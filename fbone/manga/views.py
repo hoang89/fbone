@@ -101,6 +101,10 @@ class MangaView(FlaskView):
         return redirect(urllib.unquote(back).decode('utf-8')) if back else redirect(
                 url_for('manga.MangaView:index'))
 
+    @route("/test/")
+    def test(self):
+        return render_template("manga/test.html")
+
 
 class ChapterView(FlaskView):
     decorators = [admin_required]
@@ -109,7 +113,7 @@ class ChapterView(FlaskView):
     @route('/<string:id>')
     def index(self, id):
         page = int(request.args.get('page', 1))
-        pages = ChapterInfo.objects(manga=id).exclude("links").paginate(page=page, per_page=10)
+        pages = ChapterInfo.objects(manga=id).order_by('-chapter').exclude("links").paginate(page=page, per_page=10)
         return render_template('chapter/index.html', items=pages.items, pages=pages, id=id)
 
     @route('/detail/<string:id>')
