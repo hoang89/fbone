@@ -1,12 +1,13 @@
-__author__ = 'hoangnn'
-
+# -*- coding: utf-8 -*-
 from flask.ext.wtf import Form, StringField, IntegerField, Required, SubmitField, TextAreaField, SelectField
+
 
 class InsertForm(Form):
     chapter = IntegerField(validators=[Required()])
     base = StringField(validators=[Required()])
     max = IntegerField(validators=[Required()])
     submit = SubmitField(u'Add manga chapter')
+
 
 class MangaForm(Form):
     name = StringField(validators=[Required()])
@@ -17,20 +18,27 @@ class MangaForm(Form):
     img = StringField()
     submit = SubmitField(u'Add manga')
 
+
 class MangaEditForm(Form):
     name = StringField(validators=[Required()])
-    status = SelectField(u'Status', choices=[('1', 'Active'),('0', 'Inactive'),('2', 'Delete')])
+    status = SelectField(u'Status', choices=[('1', 'Active'), ('0', 'Inactive'), ('2', 'Delete')])
+    state = SelectField(u'State', choices=[('1', 'UPDATE'), ('0', 'SHUTDOWN'), ('2', 'COMPLETED')])
+    source = StringField(u'Nguồn truyện')
+    other_name = StringField(u'Tên khác')
     author = StringField(validators=[Required()])
     painter = StringField()
     language = StringField()
     desc = TextAreaField()
     img = StringField()
-    comment = TextAreaField()
+    clist = TextAreaField(u'Thể loại truyện')
+    comment = StringField()
     submit = SubmitField(u'Edit manga')
+
 
 class InitForm(Form):
     url = StringField(validators=[Required()])
     submit = SubmitField(u'Init Manga')
+
 
 class ChapterEditForm(Form):
     name = StringField(validators=[Required()])
@@ -40,6 +48,7 @@ class ChapterEditForm(Form):
     chapter_status = SelectField(choices=[('1', 'Active'), ('0', 'Inactive'), ('3', 'Delete')])
     submit = SubmitField(u'Edit chapter')
 
+
 class MangaLinkEditForm(Form):
     name = StringField()
     desc = TextAreaField()
@@ -48,9 +57,11 @@ class MangaLinkEditForm(Form):
     img = StringField()
     submit = SubmitField(u'Edit link')
 
+
 class AddLinkForm(Form):
     url = StringField(validators=[Required()])
     submit = SubmitField(u'Add Manga Chapter')
+
 
 class AddChapterByHand(Form):
     name = StringField("Chapter Name", validators=[Required()])

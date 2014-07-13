@@ -1,3 +1,3 @@
 __author__ = 'hoangnn'
 
-from views import mcategory
+from views import category

@@ -129,7 +129,7 @@ table .headerSortUp:after {
 }
 
 .top_read_item, .top_new_item {
-	background:#EEE;
+	background:#FFFFFF;
 	border:1px solid #999;
 	float:left;
     margin-bottom: 5px;
@@ -141,5 +141,11 @@ table .headerSortUp:after {
     text-overflow: ellipsis;
     max-height: 2.8em;
     line-height: 1.4em;
+}
+
+hr{
+    margin-bottom: 1px;
+    margin-top: 1px;
+    border: 1px dashed #eee;
 }
 

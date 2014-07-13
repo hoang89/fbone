@@ -2,12 +2,17 @@
 
 {% extends "layouts/base.html" %}
 
+{% block css_style %}
+    <link rel="stylesheet" href="{{ url_for("static",filename="css/manga/jquery-ui.1.10.4.css") }}">
+{% endblock %}
+
+
 {% block body %}
     <div class="container">
         <div class="row">
             <div class="span7">
                 <h2>Edit manga</h2>
-                {{ render_form(url_for('manga.MangaView:edit', id=id), form) }}
+                {{ render_form(url_for('manga.MangaView:edit', id=id, back=back), form) }}
             </div>
             <div class="span5">
                 <img src="{{ form.img.data }}">
@@ -15,5 +20,13 @@
         </div>
 
     </div>
+{% endblock %}
 
+{% block js_user %}
+    <script type="text/javascript">
+        var availableTags = {{ categories | safe }};
+    </script>
+    <script src="{{ url_for('static', filename='js/manga/jquery-1.10.2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/manga/jquery-ui.1.10.4.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/manga/edit.js') }}"></script>
 {% endblock %}

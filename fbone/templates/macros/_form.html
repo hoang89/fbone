@@ -76,7 +76,7 @@
         {{ field.label }}
     </label>
     <div class="controls">
-        {{ field }}
+        {{ field | safe }}
         <span class="help-inline">{{ field.description }}</span>
         {% if field.errors -%}
             {% for error in field.errors -%}

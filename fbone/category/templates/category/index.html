@@ -5,19 +5,19 @@
     <div class="container-fluid">
         <div class="row-fluid">
             <div class="span12">
-                {{ render_form(url_for('mcategory.insert'), horizontal=True, form=form) }}
+                {{ render_form(url_for('category.CategoryView:add'), horizontal=True, form=form) }}
             </div>
             <div class="span12">
                 <table class="table table-bordered">
                     <thead>
                     <th>Name</th>
-                    <th>Language</th>
+                    <th>Manga Count</th>
                     </thead>
                     <tbody>
                     {% for cate in categories %}
                         <tr>
                             <td>{{ cate.name }}</td>
-                            <td>{{ cate.language }}</td>
+                            <td>{{ cate.manga_count }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>

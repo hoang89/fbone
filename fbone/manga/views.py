@@ -8,16 +8,20 @@ from models import ChapterInfo, MangaInfo
 from flask.ext.classy import FlaskView, route
 from datetime import datetime
 import urllib, requests
-from bs4 import BeautifulSoup
 from fbone.utils import pretty_date
 from html_parse import parse_manga_link, parse_all_manga_from_blog_truyen, parse_all_chapter_from_blog_truyen
 from html_parse import complete_manga_info, parse_all_chapter_to_db, add_manga_link
 from fbone.decorators import admin_required
+from ..category.models import Category
+import json
 
 manga = Blueprint('manga', __name__, template_folder='templates')
 
 PER_PAGE = 10
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 class MangaView(FlaskView):
     decorators = [admin_required]
@@ -63,17 +67,39 @@ class MangaView(FlaskView):
 
     @route('/edit/<string:id>', methods=['GET', 'POST'])
     def edit(self, id):
+        back = request.args.get('back')
         manga_info = MangaInfo.objects(id=id).first()
         form = MangaEditForm(obj=manga_info)
+        all = Category.objects().only('name')
+        categories = []
+        [categories.append(c.name) for c in all]
+
         if request.method == 'GET':
-            return render_template('manga/edit.html', form=form, id=id)
+            pcs = []
+            [pcs.append(c.name) for c in manga_info.categories]
+            form.clist.data = ",".join(pcs)
+            return render_template('manga/edit.html', form=form, id=id, categories=json.dumps(categories), back=back)
         else:
             if manga_info.comment:
                 manga_info.history_comment.append(manga_info.comment)
             form.populate_obj(manga_info)
             manga_info.updated_time = datetime.utcnow()
+
+            #remove all category
+            for cat in manga_info.categories:
+                cat.remove_manga(manga_info)
+
+            ## add manga category:
+            clist = form.clist.data.split(',')
+            cs = []
+            for c in clist:
+                category = Category.get_by_name(c.strip())
+                if category:
+                    category.add_manga(manga_info)
+                    cs.append(category)
+            manga_info.categories = cs
             manga_info.save()
-            return redirect(url_for('manga.MangaView:index'))
+            return redirect(urllib.unquote(back).decode('utf-8')) if back else redirect(url_for('manga.MangaView:index'))
 
     @route('/init/<string:id>', methods=['GET', 'POST'])
     def init(self, id):
