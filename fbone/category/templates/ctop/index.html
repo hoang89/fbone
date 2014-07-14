@@ -5,10 +5,13 @@
     <div class="container">
         <div class="row">
             <div class="panel panel-default">
+                <div class="panel-heading">
+                    {{ category.name }}
+                </div>
                 <div class="panel-body">
                     <div class="row">
                         {% set count = 1 -%}
-                        {% for item in mangas %}
+                        {% for item in category.mangas %}
                             <a href="{{ url_for('home.HomeView:detail', slug=item.slug) }}">
                                 <div class="col-lg-3 col-md-4 col-sm-6">
                                     <div class="col-lg-4 col-md-4 col-sm-4">

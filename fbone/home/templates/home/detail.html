@@ -32,7 +32,9 @@
                                                 <td><b>Category</b></td>
                                                 <td>
                                                     {% for c in manga.categories %}
-                                                    <a href="{{ url_for('category.TopCategoryView:index', slug=c.slug) }}"><span class="glyphicon glyphicon-circle-arrow-right"></span> {{ c.name | safe }}</a>
+                                                        <a href="{{ url_for('category.TopCategoryView:index', slug=c.slug) }}"><span
+                                                                class="glyphicon glyphicon-circle-arrow-right"></span> {{ c.name | safe }}
+                                                        </a>
                                                     {% endfor %}
                                                 </td>
                                             </tr>
@@ -74,18 +76,18 @@
                 <div class="row">
                     <table class="table table-bordered table-striped">
                         <thead>
-                            <th>Chapter name</th>
-                            <th>Read count</th>
-                            <th>Added time</th>
+                        <th>Chapter name</th>
+                        <th>Read count</th>
+                        <th>Added time</th>
                         </thead>
                         <tbody>
-                            {% for chapter in chapters %}
+                        {% for chapter in chapters %}
                             <tr>
                                 <td>{{ chapter.name }}</td>
                                 <td>{{ chapter.read_count }}</td>
                                 <td>{{ chapter.created_at | display_time }}</td>
                             </tr>
-                            {% endfor %}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -93,7 +95,24 @@
 
             {# For relative detail #}
             <div class="col-lg-3">
-
+                {% for cat in categories %}
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <a href="{{ url_for('category.TopCategoryView:index', slug=cat.slug) }}">{{ cat.name }}</a>
+                                </div>
+                                <div class="panel-body">
+                                    <ul class="list-unstyled">
+                                        {%- for item in cat.mangas | max_range %}
+                                            <li class="list-unstyled"><a class="#" href="#">{{ item.name }}</a></li>
+                                        {%- endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>

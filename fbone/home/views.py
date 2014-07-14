@@ -1,7 +1,7 @@
 __author__ = 'hoangnn'
 # -*- coding: utf-8 -*-
 from flask.ext.classy import FlaskView, route
-from flask import render_template, Blueprint, request, abort
+from flask import render_template, Blueprint, request, abort, redirect, url_for, flash
 from ..manga.models import MangaInfo, ChapterInfo
 from ..category.models import Category
 from fbone.utils import pretty_date
@@ -51,7 +51,8 @@ class HomeView(FlaskView):
         if not manga:
             return abort(404)
         chapters = ChapterInfo.objects(manga=manga)
-        return render_template('home/detail.html', manga=manga, chapters=chapters)
+        categories = manga.categories
+        return render_template('home/detail.html', manga=manga, chapters=chapters, categories=categories)
 
 HomeView.register(home)
 
@@ -92,3 +93,10 @@ def chapter_time(date):
         return date.strftime("%d - %m")
     else:
         return "NONE"
+
+@home.app_template_filter('max_range')
+def max_range(mangas):
+    if len(mangas) > 3:
+        return mangas[0:3]
+    else:
+        return mangas

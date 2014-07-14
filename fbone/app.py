@@ -126,6 +126,13 @@ def configure_template_filters(app):
     def format_date(value, format='%Y-%m-%d'):
         return value.strftime(format)
 
+    @app.context_processor
+    def inject_characters():
+        all = []
+        [all.append(chr(c)) for c in range(ord('A'), ord('Z')+1)]
+        all.append('0-9')
+        return dict(characters=all)
+
 
 def configure_logging(app):
     """Configure file(info) and email(error) logging."""

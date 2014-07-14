@@ -38,7 +38,7 @@ class TopCategoryView(FlaskView):
         category = Category.objects(slug=slug).first()
         if not category:
             return abort(404)
-        return render_template('ctop/index.html', mangas=category.mangas)
+        return render_template('ctop/index.html', category=category)
 
 
 
